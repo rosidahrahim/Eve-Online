@@ -15,7 +15,7 @@
   --ink: #14222e;
   --muted: #55677a;
   --line: #d2dae2;
-  --accent: #0a6f8c; --duck: #973231;
+  --accent: #0a6f8c; --duck: #973231; --c1: #0b7a63; --c2: #3b8a1c; --c3: #937400; --c4: #bd5a00; --c5: #c4161c; --c6: #8a2cae;
   --accent-soft: #dcf0f5;
   --ok: #1d7a46;
   --ok-soft: #dff3e7;
@@ -31,14 +31,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0e1a24; --panel: rgba(20,36,47,.82); --ink: #e5edf3; --muted: #93a7b8; --line: #27394a;
-    --accent: #55c4e2; --duck: #c75757; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
+    --accent: #55c4e2; --duck: #c75757; --c1: #4fd1a8; --c2: #92dc5c; --c3: #f2d14a; --c4: #ff9b3d; --c5: #ff4d4d; --c6: #c98bff; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
     --warn: #f0b24c; --warn-soft: #3d2f10; --bad: #ff8b82; --bad-soft: #43201e;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0e1a24; --panel: rgba(20,36,47,.82); --ink: #e5edf3; --muted: #93a7b8; --line: #27394a;
-  --accent: #55c4e2; --duck: #c75757; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
+  --accent: #55c4e2; --duck: #c75757; --c1: #4fd1a8; --c2: #92dc5c; --c3: #f2d14a; --c4: #ff9b3d; --c5: #ff4d4d; --c6: #c98bff; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
   --warn: #f0b24c; --warn-soft: #3d2f10; --bad: #ff8b82; --bad-soft: #43201e;
   color-scheme: dark;
 }
@@ -103,6 +103,10 @@ dl.kv dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nu
 .calc { display: flex; flex-direction: column; gap: 8px; }
 .calc .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.92rem; }
 .result { font-family: var(--mono); font-size: 1.05rem; padding: 8px 10px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); }
+.cl1 { color: var(--c1); font-weight: 600; } .cl2 { color: var(--c2); font-weight: 600; } .cl3 { color: var(--c3); font-weight: 600; }
+.cl4 { color: var(--c4); font-weight: 600; } .cl5 { color: var(--c5); font-weight: 700; } .cl6 { color: var(--c6); font-weight: 600; }
+.chip.cc { border-color: currentColor; font-weight: 600; }
+.chip.cc[aria-pressed="true"] { border-color: var(--accent); }
 .note { margin: 10px 0 0; padding: 8px 10px; border-left: 3px solid var(--warn); background: var(--warn-soft); font-size: 0.92rem; border-radius: 0 6px 6px 0; }
 .empty { padding: 18px; text-align: center; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
 
@@ -292,6 +296,7 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
     if (s === "LS/NS") return "Low or null"; if (s === "K-space") return "K-space";
     return s;
   }
+  function cls(s) { return String(s).replace(/C([1-6])(?!\d)/g, '<span class="cl$1">C$1</span>'); }
   function mkg(t) { return (t / 1000).toLocaleString("en-US", { maximumFractionDigits: 1 }); }
   function size(j) {
     if (j <= 5000) return { k: "s", n: "Small" };
@@ -314,7 +319,7 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
   var toChips = el("toChips");
   TO_OPTS.forEach(function (o) {
     var b = document.createElement("button");
-    b.type = "button"; b.className = "chip"; b.textContent = o[1]; b.setAttribute("data-v", o[0]);
+    b.type = "button"; b.className = "chip" + (/^C[1-6]$/.test(o[0]) ? " cc cl" + o[0][1] : ""); b.textContent = o[1]; b.setAttribute("data-v", o[0]);
     b.setAttribute("aria-pressed", o[0] === "all" ? "true" : "false");
     b.addEventListener("click", function () {
       state.to = o[0];
@@ -356,12 +361,12 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
     var st = STATIC_OF[d.code];
     var det = document.createElement("details");
     det.className = "wh";
-    var tags = (st ? '<span class="tag">Static in ' + st.join(", ") + '</span>' : '') + (d.regen ? '<span class="tag reg">Regen</span>' : '');
-    var fromTxt = d.from ? place(d.from) : "Signature";
+    var tags = (st ? '<span class="tag">Static in ' + cls(st.join(", ")) + '</span>' : '') + (d.regen ? '<span class="tag reg">Regen</span>' : '');
+    var fromTxt = d.from ? cls(place(d.from)) : "Signature";
     det.innerHTML =
       '<summary>' +
         '<div class="cell"><span class="lab">Code</span><span class="code">' + d.code + '</span></div>' +
-        '<div class="cell route-cell"><span class="lab">Route</span><span class="route">' + fromTxt + '<span class="arrow" aria-hidden="true">→</span><span class="sr" style="position:absolute;left:-9999px">to</span>' + place(d.to) + tags + '</span></div>' +
+        '<div class="cell route-cell"><span class="lab">Route</span><span class="route">' + fromTxt + '<span class="arrow" aria-hidden="true">→</span><span class="sr" style="position:absolute;left:-9999px">to</span>' + cls(place(d.to)) + tags + '</span></div>' +
         '<div class="cell"><span class="lab">Total mass</span><span class="val">' + mkg(d.total) + 'M</span></div>' +
         '<div class="cell"><span class="lab">Per jump</span><span class="val">' + mkg(d.jump) + 'M</span></div>' +
         '<div class="cell"><span class="lab">Lifetime</span><span class="val">' + d.life + 'h</span></div>' +
@@ -419,12 +424,12 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
     var s = STATICS[c];
     var head = s.pairs ? ["Static pair", "Leads to"] : ["Static", "Leads to"];
     var html = '<p class="meta" style="margin:10px 0">' + s.note + '</p><div class="tbl"><table><thead><tr><th>' + head[0] + '</th><th>' + head[1] + '</th></tr></thead><tbody>';
-    s.rows.forEach(function (r) { html += '<tr><td class="c">' + r[0] + '</td><td>' + r[1] + '</td></tr>'; });
+    s.rows.forEach(function (r) { html += '<tr><td class="c">' + cls(r[0]) + '</td><td>' + cls(r[1]) + '</td></tr>'; });
     panel.innerHTML = html + '</tbody></table></div>';
   }
   Object.keys(STATICS).forEach(function (c) {
     var b = document.createElement("button");
-    b.type = "button"; b.className = "chip"; b.textContent = c; b.setAttribute("data-v", c); b.setAttribute("aria-pressed", "false");
+    b.type = "button"; b.className = "chip cc cl" + c[1]; b.textContent = c; b.setAttribute("data-v", c); b.setAttribute("aria-pressed", "false");
     b.addEventListener("click", function () { showClass(c); });
     tabs.appendChild(b);
   });
