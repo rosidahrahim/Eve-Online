@@ -115,6 +115,18 @@ td.v, th.v { text-align: right; padding-right: 12px; font-family: var(--mono); f
 .sitegrid ul { margin: 0; padding-left: 18px; font-size: 0.93rem; }
 .sitegrid li { margin-bottom: 3px; }
 .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: -1px; border: 1px solid var(--line); }
+.roll-out table td, .roll-out table th { white-space: nowrap; }
+.roll-sum { margin: 12px 0 0; display: grid; gap: 6px; font-size: 0.95rem; }
+.roll-sum p { margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--accent-soft); }
+.roll-sum p.warn { background: var(--warn-soft); color: var(--warn); }
+.roll-sum p.bad { background: var(--bad-soft); color: var(--bad); }
+.roll-sum p.ok { background: var(--ok-soft); color: var(--ok); }
+ol.steps { margin: 8px 0 0; padding-left: 20px; } ol.steps li { margin-bottom: 6px; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.btn:hover { border-color: var(--accent); }
+.btn.hot { border-color: var(--bad); color: var(--bad); }
+.btn.cold { border-color: var(--accent); color: var(--accent); }
 .note { margin: 10px 0 0; padding: 8px 10px; border-left: 3px solid var(--warn); background: var(--warn-soft); font-size: 0.92rem; border-radius: 0 6px 6px 0; }
 .empty { padding: 18px; text-align: center; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
 
@@ -259,6 +271,66 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
     </div>
   </section>
 
+  <section class="block" id="rolling">
+    <h2>Rolling guide</h2>
+    <p class="meta">Rolling is collapsing a hole on purpose by sending a heavy ship through it until its mass limit runs out. You roll to cut off a threat, to reset a static, or to find a new connection. The method below uses a battleship, with the Praxis as the worked example.</p>
+
+    <h3>How the mass works</h3>
+    <div class="panelbox">
+      <dl class="kv" style="margin-top:10px">
+        <dt>Hot and cold</dt><dd>Hot means the propulsion module is on during the jump, cold means off. Turning it on adds mass.</dd>
+        <dt>Same size, same mass</dt><dd>An afterburner and a microwarpdrive of the same size add the same mass.</dd>
+        <dt>Higgs anchor</dt><dd>The large Higgs Anchor rig is the key part of a rolling fit. The All-Out guide gives no numeric effect for it.</dd>
+        <dt>Hole total</dt><dd>Each hole is born with 90% to 110% of its listed total mass, so you never know the exact limit.</dd>
+        <dt>Every jump counts</dt><dd>Mass is spent in both directions. A round trip costs your cold mass plus your hot mass, or hot twice.</dd>
+      </dl>
+      <p class="note">Reference masses from the All-Out guide: Megathron hot with Higgs 300M kg, cold with Higgs 200M, hot unrigged 150M, cold unrigged 100M. Thorax hot with Higgs 125M, cold 25M. The unrigged pair shows the prop module adds about 50M kg, and the rigged pair shows it adding about 100M.</p>
+    </div>
+
+    <h3>The Praxis as a roller</h3>
+    <div class="panelbox">
+      <dl class="kv" style="margin-top:10px">
+        <dt>Hull mass</dt><dd>87M kg</dd>
+        <dt>Slots</dt><dd>7 high, 7 mid, 7 low, 3 large rigs</dd>
+        <dt>Target (cold)</dt><dd>about 200M kg</dd>
+        <dt>Target (hot)</dt><dd>about 300M kg</dd>
+      </dl>
+      <p class="meta" style="margin-top:10px">The Praxis hull is light next to a Megathron, so it needs about 113M kg of fitted mass (armor plates, rig, modules) to reach a 200M cold weight. The ship info window shows the fitted mass, so fit it, then toggle the prop module and read the cold and hot numbers yourself. A forum thread on Praxis rollers gives its own cold and hot figures, but another poster in the same thread says those numbers are wrong, so measure your own fit. Keep the hot weight under the hole's per-jump limit. If it comes out over, take plates offline rather than guessing.</p>
+      <p class="note">The wiki's own rolling guides quote the large-hole jump limit as both 300M and 375M kg, and its attributes table says 375M. Read Show Info on the hole you are rolling and keep your hot mass under that number.</p>
+    </div>
+
+    <h3>Step by step</h3>
+    <div class="panelbox">
+      <ol class="steps">
+        <li><strong>Check the hole.</strong> Show Info gives the destination, the lifetime state, and the mass state (more than 50%, under 50%, or under 10% left). Find its total mass in the chart above.</li>
+        <li><strong>Prepare.</strong> Fit the roller with a scanner and probes so you can find your way home. Bookmark the hole on both sides. Tell a second pilot where you are.</li>
+        <li><strong>Start with hot and cold passes.</strong> On a fresh hole, All-Out alternates cold and hot passes from inside the hole, watching for the mass state to change. Its safe pattern for a 2,000M hole is cold out, hot in, repeated, with the last pass chosen from what Show Info reports.</li>
+        <li><strong>Wait out polarization.</strong> After each jump you are polarized for 5 minutes, so each pass takes time. Use that time to check Show Info.</li>
+        <li><strong>Watch for reduced.</strong> When Show Info says under 50% left, the hole has taken about half its total mass. This narrows the unknown 10% spread.</li>
+        <li><strong>Watch for critical.</strong> Critical means under 10% left. The most mass a critical hole can still hold is 11% of its listed total. If your hot mass is above that, one hot pass finishes it.</li>
+        <li><strong>Finish on the right side.</strong> If the hole turns critical while you are outside, a hot pass back in rolls it. If you are inside, use a cheap threader ship with a cheap clone: go cold out and hot in until the hole closes or rolls you out.</li>
+        <li><strong>If it rolls early.</strong> If the hole closes before critical, you may be stranded on the far side. Probe your way home, and keep the roller insured.</li>
+      </ol>
+      <p class="meta" style="margin-top:10px">All-Out reports its method fails about 5% of the time from random mass variation, and most other failures are human error. Once several ships of unknown mass have jumped, the sums stop being reliable.</p>
+    </div>
+
+    <h3>Roll planner</h3>
+    <p class="meta">Pick the hole, enter your cold and hot masses, then add passes in order. The planner keeps a running total and shows what Show Info could say after each pass.</p>
+    <div class="controls" id="rollCtl">
+      <div class="ctl"><label for="rollHole">Hole</label><select id="rollHole"></select></div>
+      <div class="ctl"><label for="rollCold">Cold mass (M kg)</label><input type="number" id="rollCold" value="200" min="1" step="1"></div>
+      <div class="ctl"><label for="rollHot">Hot mass (M kg)</label><input type="number" id="rollHot" value="300" min="1" step="1"></div>
+      <div class="ctl"><label for="rollStart">You start</label><select id="rollStart"><option value="in">Inside (home side)</option><option value="out">Outside</option></select></div>
+      <div class="ctl btnrow" style="flex-basis:100%">
+        <button type="button" class="btn hot" id="rollAddHot">Add hot pass</button>
+        <button type="button" class="btn cold" id="rollAddCold">Add cold pass</button>
+        <button type="button" class="btn" id="rollUndo">Undo</button>
+        <button type="button" class="btn" id="rollReset">Reset</button>
+      </div>
+    </div>
+    <div id="rollOut" class="roll-out" aria-live="polite"></div>
+  </section>
+
   <section class="block" id="drifters">
     <h2>Drifter holes</h2>
     <p class="meta">Five Drifter systems, each reached from known space through one unique signature. Each holds six statics: Z647, D382, O477, Y683, N062 and R474, which lead to C1 through C6.</p>
@@ -285,14 +357,14 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
         <dt>Jump mass</dt><dd>Heaviest single ship allowed through. Heavier ships cannot jump.</dd>
         <dt>Regen</dt><dd>Mass a few holes win back each day; most never do.</dd>
         <dt>Wandering C4</dt><dd>C4 only reaches K-space by wandering holes: S047 to highsec, N290 to lowsec, K329 to nullsec.</dd>
-        <dt>Polarization</dt><dd>You cannot jump a hole in the same direction twice within 5 minutes.</dd>
+        <dt>Polarization</dt><dd>After a jump you stay polarized for 5 minutes. Wait it out before the next pass.</dd>
       </dl>
       <p class="note">The wiki's ship-size notes list the large band at 300M kg, while its table lists 375M kg. This page uses the table. Check Show Info on the hole itself before you commit a hull.</p>
     </div>
   </section>
 
   <footer>
-    Source: EVE University Wiki (Wormhole attributes, Wormhole space, Wormhole sites, Visual wormhole identification), content under CC BY-SA 4.0. Statics listed are the wiki's per-class sets. Check a hole's mass state in Show Info before rolling it.
+    Source: EVE University Wiki (Wormhole attributes, Wormhole space, Wormhole sites, Visual wormhole identification, Praxis, Wormhole Community Static Rolling Guide) and the All-Out Rolling Wormholes guide, content under CC BY-SA 4.0. Statics listed are the wiki's per-class sets. Check a hole's mass state in Show Info before rolling it.
   </footer>
 </div>
 
@@ -584,6 +656,73 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
     el("siteTabs").appendChild(b);
   });
   showSites(siteCur);
+
+  // ---------- roll planner ----------
+  var rollPasses = [];
+  function rollState(P, T0) {
+    var f = P / T0;
+    if (f >= 1.1) return { t: "Collapsed", k: "bad" };
+    if (f >= 0.99) return { t: "Critical if open; may have collapsed", k: "bad" };
+    if (f >= 0.9) return { t: "May be critical or collapsed", k: "bad" };
+    if (f >= 0.81) return { t: "Reduced, may be critical", k: "warn" };
+    if (f >= 0.55) return { t: "Reduced (under 50% left)", k: "warn" };
+    if (f >= 0.45) return { t: "May show reduced", k: "" };
+    return { t: "Stable (over 50% left)", k: "ok" };
+  }
+  function fm(n) { return Math.round(n).toLocaleString("en-US"); }
+  function renderRoll() {
+    var d = D.filter(function (x) { return x.code === el("rollHole").value; })[0];
+    var cold = +el("rollCold").value, hot = +el("rollHot").value;
+    var T0 = d.total / 1000, jump = d.jump / 1000;
+    var startIn = el("rollStart").value === "in";
+    var sum = [];
+    var critMax = 0.11 * T0;
+    sum.push('<p>' + d.code + ': listed total ' + fm(T0) + 'M kg, so the real limit is between ' + fm(T0 * 0.9) + 'M and ' + fm(T0 * 1.1) + 'M. Per-jump limit ' + fm(jump) + 'M kg.</p>');
+    if (!(cold > 0) || !(hot > 0)) { sum.push('<p class="warn">Enter positive cold and hot masses.</p>'); }
+    else {
+      if (hot > jump) sum.push('<p class="bad">Your hot mass of ' + fm(hot) + 'M is over this hole\'s ' + fm(jump) + 'M limit. The ship cannot jump hot. Take plates offline or pick another hole.</p>');
+      else if (cold > jump) sum.push('<p class="bad">Your cold mass is over the ' + fm(jump) + 'M limit.</p>');
+      if (hot < cold) sum.push('<p class="warn">Hot mass is lower than cold mass. Check the numbers.</p>');
+      sum.push(hot > critMax
+        ? '<p class="ok">Final pass rule: a critical hole has at most ' + fm(critMax) + 'M left. Your hot mass of ' + fm(hot) + 'M is above that, so one hot pass finishes it.</p>'
+        : '<p class="warn">Final pass rule: a critical hole can hold up to ' + fm(critMax) + 'M. Your hot mass of ' + fm(hot) + 'M is below that, so a single hot pass may not finish it. Plan on more than one.</p>');
+      sum.push('<p>Full round trips: about ' + (T0 * 0.9 / (cold + hot)).toFixed(1) + ' to ' + (T0 * 1.1 / (cold + hot)).toFixed(1) + ' (cold plus hot each).</p>');
+    }
+    var rows = "", P = 0, side = startIn;
+    rollPasses.forEach(function (ps, i) {
+      var m = ps === "H" ? hot : cold;
+      P += m;
+      var wasIn = side; side = !side;
+      var st = rollState(P, T0);
+      var risk = (!side && P >= 0.9 * T0) ? " You may be stranded outside." : "";
+      var heavy = m > jump ? " Too heavy to jump." : "";
+      rows += "<tr><td class=\"v\">" + (i + 1) + "</td><td>" + (ps === "H" ? "Hot" : "Cold") + "</td><td class=\"v\">" + fm(m) + "M</td><td>" + (wasIn ? "Out" : "In") + "</td><td class=\"v\">" + fm(P) + "M</td><td class=\"" + (st.k === "bad" ? "neg" : st.k === "ok" ? "pos" : "") + "\">" + st.t + risk + heavy + "</td></tr>";
+    });
+    var tbl = rollPasses.length
+      ? '<div class="panelbox tbl"><table><thead><tr><th class="v">#</th><th>Pass</th><th class="v">Mass</th><th>Direction</th><th class="v">Passed so far</th><th>What Show Info could say</th></tr></thead><tbody>' + rows + "</tbody></table></div>"
+      : '<p class="meta" style="margin-top:10px">No passes yet. Add a hot or cold pass.</p>';
+    if (rollPasses.length) {
+      var Pn = P;
+      if (Pn >= 1.1 * T0) sum.push('<p class="bad">The hole is certainly collapsed after pass ' + rollPasses.length + '. You finish ' + (side ? "inside" : "outside") + '.</p>');
+      else if (Pn >= 0.9 * T0) sum.push('<p class="bad">The hole may already be gone. If it is still open, you are ' + (side ? "inside" : "outside") + '.</p>');
+      else sum.push('<p>' + fm(Pn) + 'M used. The hole can take between ' + fm(0.9 * T0 - Pn) + 'M and ' + fm(1.1 * T0 - Pn) + 'M more before it collapses. You are ' + (side ? "inside" : "outside") + '.</p>');
+    }
+    el("rollOut").innerHTML = '<div class="roll-sum">' + sum.join("") + "</div>" + tbl;
+  }
+  (function initRoll() {
+    var sel = el("rollHole");
+    sel.innerHTML = D.map(function (x) {
+      return '<option value="' + x.code + '">' + x.code + " \u00b7 " + place(x.from || "Signature") + " to " + place(x.to) + " \u00b7 " + fm(x.total / 1000) + "M total</option>";
+    }).join("");
+    sel.value = "D382";
+    sel.addEventListener("change", function () { rollPasses = []; renderRoll(); });
+    ["rollCold", "rollHot", "rollStart"].forEach(function (id) { el(id).addEventListener("input", renderRoll); el(id).addEventListener("change", renderRoll); });
+    el("rollAddHot").addEventListener("click", function () { rollPasses.push("H"); renderRoll(); });
+    el("rollAddCold").addEventListener("click", function () { rollPasses.push("C"); renderRoll(); });
+    el("rollUndo").addEventListener("click", function () { rollPasses.pop(); renderRoll(); });
+    el("rollReset").addEventListener("click", function () { rollPasses = []; renderRoll(); });
+    renderRoll();
+  })();
 })();
 </script>
 </body>
