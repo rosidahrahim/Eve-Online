@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gas Huffer's Chart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a navigator's chart. One ranked list of sites, each row opens to gas, reactions and guards; a gas panel below. */
+:root {
+  --bg: #eef1f4;
+  --panel: rgba(255,255,255,.84);
+  --ink: #14222e;
+  --muted: #55677a;
+  --line: #d2dae2;
+  --accent: #0a6f8c;
+  --accent-soft: #dcf0f5;
+  --ok: #1d7a46;
+  --ok-soft: #dff3e7;
+  --warn: #9a5a00;
+  --warn-soft: #fbedd0;
+  --bad: #b3261e;
+  --bad-soft: #fbe3e1;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1a24; --panel: rgba(20,36,47,.82); --ink: #e5edf3; --muted: #93a7b8; --line: #27394a;
+    --accent: #55c4e2; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
+    --warn: #f0b24c; --warn-soft: #3d2f10; --bad: #ff8b82; --bad-soft: #43201e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1a24; --panel: rgba(20,36,47,.82); --ink: #e5edf3; --muted: #93a7b8; --line: #27394a;
+  --accent: #55c4e2; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
+  --warn: #f0b24c; --warn-soft: #3d2f10; --bad: #ff8b82; --bad-soft: #43201e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+.bg-logo { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 75vmax; height: 75vmax; max-width: none; opacity: .14; pointer-events: none; z-index: 0; user-select: none; }
+.wrap { position: relative; z-index: 1; max-width: 1060px; margin: 0 auto; padding: 28px 16px 64px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: 0.01em; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1; }
+h2 { font-size: 1.7rem; margin-bottom: 6px; }
+h3 { font-size: 1.15rem; margin: 18px 0 8px; }
+.lede { max-width: 62ch; font-size: 1.1rem; margin: 10px 0 6px; }
+.meta { color: var(--muted); font-size: 0.88rem; margin: 0; max-width: 70ch; }
+.num, td.n, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* controls */
+.controls { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-end; margin: 26px 0 14px; padding: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.ctl { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+.ctl > span, .ctl > label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+button, select, input { font: inherit; color: inherit; }
+.chip { border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-size: 0.9rem; }
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+:root[data-theme="dark"] .chip[aria-pressed="true"] { color: #06222c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip[aria-pressed="true"] { color: #06222c; } }
+select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+input[type=range] { width: 200px; accent-color: var(--accent); }
+.range-out { font-family: var(--mono); font-size: 0.95rem; }
+.warn-line { flex-basis: 100%; margin: 0; font-size: 0.88rem; color: var(--warn); min-height: 1.3em; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* site list */
+#sites { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+details.site { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+details.site[open] { border-color: var(--accent); }
+details.site > summary { list-style: none; cursor: pointer; padding: 14px; display: grid; grid-template-columns: 1.5fr 1.1fr 1fr 1fr 1fr 1fr; gap: 10px 14px; align-items: center; }
+details.site > summary::-webkit-details-marker { display: none; }
+.cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lab { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.val { font-family: var(--mono); font-size: 1.02rem; font-variant-numeric: tabular-nums; }
+.site-name { font-family: var(--display); font-size: 1.45rem; font-weight: 700; line-height: 1.1; }
+.site-name::after { content: "\25BE"; margin-left: 8px; color: var(--muted); font-size: 0.9rem; }
+details[open] .site-name::after { content: "\25B4"; }
+.gaschips { display: flex; gap: 5px; flex-wrap: wrap; }
+.gc { font-family: var(--mono); font-size: 0.82rem; background: var(--accent-soft); color: var(--accent); padding: 2px 7px; border-radius: 6px; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 0.85rem; padding: 2px 8px; border-radius: 6px; width: fit-content; }
+.pill.low { background: var(--ok-soft); color: var(--ok); }
+.pill.mid { background: var(--warn-soft); color: var(--warn); }
+.pill.high { background: var(--bad-soft); color: var(--bad); }
+.body { padding: 0 14px 16px; border-top: 1px solid var(--line); }
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th { text-align: left; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.n, th.n { text-align: right; padding-right: 14px; }
+tr:last-child td { border-bottom: 0; }
+.rx { display: grid; gap: 8px; }
+.rx-item { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--bg); }
+.rx-item strong { font-weight: 600; }
+.rx-sub { color: var(--muted); font-size: 0.88rem; }
+.tag { display: inline-block; font-size: 0.74rem; font-weight: 600; padding: 1px 7px; border-radius: 999px; margin-left: 6px; }
+.tag.both { background: var(--ok-soft); color: var(--ok); }
+.here { color: var(--accent); font-weight: 600; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 10px 0 0; }
+.facts p { margin: 0; font-size: 0.92rem; }
+.note { margin: 10px 0 0; padding: 8px 10px; border-left: 3px solid var(--warn); background: var(--warn-soft); font-size: 0.92rem; border-radius: 0 6px 6px 0; }
+.panelbox { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; margin-top: 12px; }
+.est { font-size: 0.72rem; font-weight: 600; background: var(--warn-soft); color: var(--warn); padding: 1px 6px; border-radius: 999px; margin-left: 6px; font-family: var(--body); }
+.empty { padding: 18px; text-align: center; color: var(--muted); }
+
+/* gas explorer */
+section.gasbox { margin-top: 44px; }
+.gasbtns { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; margin: 14px 0; }
+.gasbtn { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; display: flex; flex-direction: column; gap: 1px; }
+.gasbtn:hover { border-color: var(--accent); }
+.gasbtn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.gasbtn b { font-family: var(--display); font-size: 1.25rem; }
+.gasbtn span { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+.gaspanel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
+.gaspanel h3:first-child { margin-top: 0; }
+.sitechip { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 6px 10px; cursor: pointer; text-align: left; display: block; width: 100%; margin-bottom: 6px; }
+.sitechip:hover { border-color: var(--accent); }
+.sitechip .mono { color: var(--muted); font-size: 0.85rem; }
+
+footer { margin-top: 44px; color: var(--muted); font-size: 0.9rem; }
+footer ul { padding-left: 18px; margin: 8px 0 0; }
+footer li { margin-bottom: 4px; }
+footer a { color: var(--accent); }
+
+@media (max-width: 860px) {
+  details.site > summary { grid-template-columns: 1fr 1fr; }
+  .cell.name, .cell.gases { grid-column: 1 / -1; }
+  .gaspanel { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<img class="bg-logo" src="logo.webp" alt="" aria-hidden="true">
+<div class="wrap">
+  <header>
+    <h1>Gas Huffer's Chart</h1>
+    <p class="lede">Nine fullerite reservoirs in J-Space: what gas is in each, what it sells for, what it reacts into, and which Sleepers turn up.</p>
+    <p class="meta">Site data from the EVE University Wiki. Prices from a Fuzzwork snapshot of The Forge with no date on it, so recheck before you sail. Checked 21 Nov 2026.</p>
+  </header>
+
+  <section class="controls" aria-label="Filters">
+    <div class="ctl">
+      <span id="tier-lab">Site tier</span>
+      <div class="chips" role="group" aria-labelledby="tier-lab" id="tierChips"></div>
+    </div>
+    <div class="ctl">
+      <label for="sort">Sort by</label>
+      <select id="sort">
+        <option value="value">Site value, highest first</option>
+        <option value="haul">Haul for your stay, highest first</option>
+        <option value="dps">Sleeper DPS, lowest first</option>
+        <option value="m3">Gas volume, largest first</option>
+      </select>
+    </div>
+    <div class="ctl">
+      <label for="ship">Ship</label>
+      <select id="ship"></select>
+    </div>
+    <div class="ctl">
+      <label for="mins">Time on site</label>
+      <div><input type="range" id="mins" min="5" max="40" step="5" value="15"> <span class="range-out" id="minsOut">15 min</span></div>
+    </div>
+    <p class="warn-line" id="warn" role="status"></p>
+  </section>
+
+  <ol id="sites"></ol>
+
+  <section class="gasbox" aria-labelledby="gasH">
+    <h2 id="gasH">Gas explorer</h2>
+    <p class="meta">Pick a gas to see what it reacts into and which sites carry it.</p>
+    <div class="gasbtns" id="gasBtns"></div>
+    <div class="gaspanel" id="gasPanel"></div>
+  </section>
+
+  <section class="gasbox" aria-labelledby="shipH">
+    <h2 id="shipH">Ships</h2>
+    <p class="meta">Hold sizes, speeds and signatures are from each ship's wiki page. Rates marked Estimate are my arithmetic from the listed bonuses, not wiki figures.</p>
+    <div class="tbl panelbox"><table id="shipTbl"></table></div>
+  </section>
+
+  <footer>
+    <h2>How to read this</h2>
+    <ul>
+      <li><strong>Site value</strong> is total gas volume times the snapshot ISK per m³. It is the whole cloud, not what you can carry out.</li>
+      <li><strong>Haul for your stay</strong> takes the priciest gas first at your ship's rate and stops at your hold size or the gas in the site. Venture and Prospect run about 9,600 m³ per hour with T2 scoops, which matches the wiki's clear times. The Pioneer, Pioneer Consortium Issue and Outrider rates are my estimates: the wiki lists no gas yield bonus for them, and no gas figures at all for the Outrider. Confirm in the in-game ship info.</li>
+      <li>Sleepers arrive about 15 to 20 minutes after you land. Past 15 minutes on the slider, plan to be gone.</li>
+      <li>Each reaction takes 100 units of each fullerite, 5 fuel blocks and one mineral, and returns about 40% of the input volume as hybrid polymer. Polymers then go into hybrid tech components for Tech 3 hulls and subsystems. The wiki does not say which polymer feeds which component.</li>
+      <li>The wiki's text lists C540 as the second input for C3-FTM Acid, but its icon is labelled C320-540. Check in game before you buy.</li>
+      <li>Sleeper stats are as listed on each site page, usually Wave 1 only. The wiki's wormhole sites page is flagged as needing a refresh for the 2021 mining field changes.</li>
+    </ul>
+    <p>Sources: <a href="https://wiki.eveuniversity.org/Gas_cloud_harvesting">Gas cloud harvesting</a>, <a href="https://wiki.eveuniversity.org/Wormhole_sites">Wormhole sites</a>, <a href="https://wiki.eveuniversity.org/Reactions">Reactions</a>, <a href="https://wiki.eveuniversity.org/Tech_3_Production">Tech 3 Production</a>, <a href="https://www.fuzzwork.co.uk/ore/gas.html?region=10000002">Fuzzwork gas prices</a>, and each reservoir's own wiki page.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  // Rate model: scoops x 20 m3 x (1 + gas yield bonus) per (40 s x (1 - cycle cuts)), T2 scoops.
+  var SHIPS = [
+    { id: "venture", name: "Venture", cls: "Mining frigate", hold: 5000, scoops: 2, rate: 9600, est: false, spd: 335, sig: 40,
+      note: "Built-in warp core stability worth 2 points. 100% gas yield role bonus." },
+    { id: "prospect", name: "Prospect", cls: "Expedition frigate", hold: 12500, scoops: 2, rate: 9600, est: false, spd: 380, sig: 40,
+      note: "Same gas bonuses as the Venture. Can fit a Covert Ops cloak." },
+    { id: "pioneer", name: "Pioneer", cls: "Mining destroyer", hold: 8000, scoops: 3, rate: 9600, est: true, spd: 200, sig: 80,
+      note: "Three scoops, 40 m³ drone bay. Cycle cut by the skill and by a 25% role bonus; no gas yield bonus listed." },
+    { id: "pioneerci", name: "Pioneer Consortium Issue", cls: "Mining destroyer", hold: 10000, scoops: 3, rate: 9600, est: true, spd: 210, sig: 80,
+      note: "Same scoop bonuses as the Pioneer, more hold, 4 mid slots, 80 m³ drone bay. No cloak mentioned." },
+    { id: "outrider", name: "Outrider", cls: "Command destroyer", hold: 20000, scoops: 3, rate: 5400, est: true, spd: 300, sig: 80,
+      note: "Biggest hold. Fits a micro jump field generator and one command burst. No gas scoop bonus listed, so base scoop speed." }
+  ];
+
+  var GAS = {
+    C28:  { vol: 2,  ppm: 5698.87 },
+    C32:  { vol: 5,  ppm: 3959.55 },
+    C50:  { vol: 1,  ppm: 7627.77 },
+    C60:  { vol: 1,  ppm: 6673.91 },
+    C70:  { vol: 1,  ppm: 10150.16 },
+    C72:  { vol: 2,  ppm: 3247.47 },
+    C84:  { vol: 2,  ppm: 4705.42 },
+    C320: { vol: 5,  ppm: 6856.00 },
+    C540: { vol: 10, ppm: 5201.61 }
+  };
+  var GAS_ORDER = ["C28", "C32", "C50", "C60", "C70", "C72", "C84", "C320", "C540"];
+
+  var REACTIONS = [
+    { out: "C3-FTM Acid", fuel: "Helium", gas: ["C84", "C540"], mineral: "80 Megacyte" },
+    { out: "Carbon-86 Epoxy Resin", fuel: "Nitrogen", gas: ["C32", "C320"], mineral: "30 Zydrine" },
+    { out: "Fullerene Intercalated Graphite", fuel: "Hydrogen", gas: ["C60", "C70"], mineral: "600 Mexallon" },
+    { out: "Fulleroferrocene", fuel: "Oxygen", gas: ["C60", "C50"], mineral: "1,000 Tritanium" },
+    { out: "Graphene Nanoribbons", fuel: "Nitrogen", gas: ["C28", "C32"], mineral: "400 Nocxium" },
+    { out: "Lanthanum Metallofullerene", fuel: "Oxygen", gas: ["C70", "C84"], mineral: "200 Nocxium" },
+    { out: "Methanofullerene", fuel: "Hydrogen", gas: ["C70", "C72"], mineral: "300 Isogen" },
+    { out: "PPD Fullerene Fibers", fuel: "Hydrogen", gas: ["C60", "C50"], mineral: "800 Pyerite" },
+    { out: "Scandium Metallofullerene", fuel: "Helium", gas: ["C72", "C28"], mineral: "25 Zydrine" }
+  ];
+
+  var TIERS = {
+    perimeter: { label: "Perimeter", classes: "C1–C4" },
+    frontier:  { label: "Frontier",  classes: "C3–C6" },
+    core:      { label: "Core",      classes: "C5–C6, shattered" }
+  };
+
+  function S(n, name, cls, role, ehp, sig, spd, rng) {
+    return { n: n, name: name, cls: cls, role: role, ehp: ehp, sig: sig, spd: spd, rng: rng };
+  }
+
+  var SITES = [
+    { id: "barren", name: "Barren Perimeter Reservoir", tier: "perimeter",
+      gas: [{ g: "C60", m3: 6000, h: 0.64 }, { g: "C50", m3: 12000, h: 1.26 }],
+      sleepers: [S(3, "Emergent Patroller", "Frigate", "None listed", 3000, 35, 1750, "15 km"),
+                 S(2, "Emergent Watchman", "Frigate", "Neut", 2000, 35, 1925, "15 km")],
+      neut: 6, dps: 82, loot: 2.0, notes: ["Wave 1 only is listed on the wiki."] },
+    { id: "token", name: "Token Perimeter Reservoir", tier: "perimeter",
+      gas: [{ g: "C70", m3: 6000, h: 0.64 }, { g: "C60", m3: 12000, h: 1.26 }],
+      sleepers: [S(2, "Emergent Escort", "Frigate", "Web", 1300, 35, 2100, "15 km"),
+                 S(1, "Awakened Watchman", "Cruiser", "Neut", 8750, 150, 1400, "53 km")],
+      neut: 6, dps: 78, loot: 1.8, notes: ["The wiki calls this low-end gas and says to skip it unless you plan to react it."] },
+    { id: "minor", name: "Minor Perimeter Reservoir", tier: "perimeter",
+      gas: [{ g: "C72", m3: 12000, h: 1.26 }, { g: "C70", m3: 12000, h: 1.26 }],
+      sleepers: [S(2, "Awakened Patroller", "Cruiser", "None listed", 19167, 150, 1190, "30 km")],
+      neut: null, dps: 80, loot: 2.0, notes: ["No neutralizers are listed. EHP is shown as the wiki gives it."] },
+    { id: "ordinary", name: "Ordinary Perimeter Reservoir", tier: "perimeter",
+      gas: [{ g: "C84", m3: 12000, h: 1.26 }, { g: "C72", m3: 24000, h: 2.5 }],
+      sleepers: [S(3, "Emergent Patroller", "Frigate", "None listed", 3000, 35, 1750, "15 km"),
+                 S(3, "Emergent Watchman", "Frigate", "Neut", 2000, 35, 1925, "15 km")],
+      neut: 9, dps: 96, loot: 2.4,
+      notes: ["Listed as two waves of Sleeper frigates, 3 of each type.",
+              "This site used to have 5 Sentry Towers with no spawn delay. The wiki says Sleepers replaced them in patch 2026-03-18.1, so older advice to avoid it may be out of date."] },
+    { id: "sizable", name: "Sizable Perimeter Reservoir", tier: "perimeter",
+      gas: [{ g: "C50", m3: 6000, h: 0.64 }, { g: "C84", m3: 24000, h: 2.5 }],
+      sleepers: [S(3, "Emergent Patroller", "Frigate", "None listed", 3000, 35, 1750, "15 km"),
+                 S(3, "Emergent Watchman", "Frigate", "Neut", 2000, 35, 1925, "15 km")],
+      neut: 9, dps: 96, loot: 2.4, notes: ["Wave 1 only is listed. The wiki page title spells it Sizeable."] },
+    { id: "bountiful", name: "Bountiful Frontier Reservoir", tier: "frontier",
+      gas: [{ g: "C32", m3: 20000, h: 2.08 }, { g: "C28", m3: 40000, h: 4.16 }],
+      sleepers: [S(3, "Emergent Defender", "Frigate", "Web", 4200, 35, 2160, "15 km"),
+                 S(2, "Awakened Defender", "Cruiser", "None listed", 26833, 150, 1480, "45 km")],
+      neut: null, dps: 368, loot: 20.0,
+      notes: ["Waves 1 and 2 are identical. Alpha strike 3,212.", "Lots of webs here, so you cannot rely on speed to tank."] },
+    { id: "vast", name: "Vast Frontier Reservoir", tier: "frontier",
+      gas: [{ g: "C28", m3: 8000, h: 0.84 }, { g: "C32", m3: 100000, h: 10.42 }],
+      sleepers: [S(4, "Awakened Defender", "Cruiser", "None listed", 26833, 150, 1480, "45 km"),
+                 S(4, "Awakened Upholder", "Cruiser", "Web, neut", 12250, 150, 1728, "79 km")],
+      neut: 24, dps: 392, loot: 23.2,
+      notes: ["A second wave may appear about 10 minutes after the first. The wiki does not list what it holds."] },
+    { id: "instrumental", name: "Instrumental Core Reservoir", tier: "core",
+      gas: [{ g: "C320", m3: 120000, h: 12.5 }, { g: "C540", m3: 20000, h: 2.08 }],
+      sleepers: [S(4, "Sleepless Sentinel", "Battleship", "Web, warp disruptor, neut", 147714, 400, 1125, "75 km")],
+      neut: 72, dps: 1864, loot: 63.6,
+      notes: ["The Sentinels web and point you. Be warped out before they land.", "EHP is shown as the wiki gives it, without saying per ship or total."] },
+    { id: "vital", name: "Vital Core Reservoir", tier: "core",
+      gas: [{ g: "C320", m3: 10000, h: 1.06 }, { g: "C540", m3: 240000, h: 25 }],
+      sleepers: [S(4, "Emergent Keeper", "Frigate", "Neut, remote rep", 4400, 35, 2880, "15 km"),
+                 S(4, "Sleepless Keeper", "Battleship", "Neut", 88629, 400, 945, "300 km")],
+      neut: 60, dps: 2360, loot: 74.8,
+      notes: ["The wiki says the Sleeper spawn is delayed about 15 minutes after the site is activated."] }
+  ];
+
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function fmt(n) { return Math.round(n).toLocaleString("en-US"); }
+  function fmtM(n) {
+    var m = n / 1e6;
+    return m >= 100 ? Math.round(m).toLocaleString("en-US") + "M" : m.toFixed(1) + "M";
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function siteById(id) { return SITES.filter(function (s) { return s.id === id; })[0]; }
+  function totalM3(s) { return s.gas.reduce(function (a, x) { return a + x.m3; }, 0); }
+  function totalValue(s) { return s.gas.reduce(function (a, x) { return a + x.m3 * GAS[x.g].ppm; }, 0); }
+  function threat(dps) { return dps < 150 ? "low" : dps < 700 ? "mid" : "high"; }
+  function haul(s, mins, ship) {
+    var budget = Math.min(ship.rate / 60 * mins, ship.hold), isk = 0, m3 = 0;
+    var gases = s.gas.slice().sort(function (a, b) { return GAS[b.g].ppm - GAS[a.g].ppm; });
+    for (var i = 0; i < gases.length && budget > 0; i++) {
+      var take = Math.min(budget, gases[i].m3);
+      isk += take * GAS[gases[i].g].ppm; m3 += take; budget -= take;
+    }
+    return { isk: isk, m3: m3 };
+  }
+  function siteGasNames(s) { return s.gas.map(function (x) { return x.g; }); }
+
+  /* ---------- state ---------- */
+  var state = { tier: "all", sort: "value", ship: 0, mins: 15, gas: "C70" };
+  var openSet = { barren: false };
+  var firstRender = true;
+
+  /* ---------- tier chips ---------- */
+  function renderTierChips() {
+    var items = [["all", "All sites"], ["perimeter", "Perimeter (C1–C4)"], ["frontier", "Frontier (C3–C6)"], ["core", "Core (C5–C6, shattered)"]];
+    $("tierChips").innerHTML = items.map(function (it) {
+      return '<button type="button" class="chip" data-tier="' + it[0] + '" aria-pressed="' + (state.tier === it[0]) + '">' + it[1] + "</button>";
+    }).join("");
+  }
+
+  /* ---------- reactions block for a site ---------- */
+  function reactionsFor(s) {
+    var here = siteGasNames(s);
+    var list = REACTIONS.filter(function (r) { return r.gas.some(function (g) { return here.indexOf(g) > -1; }); });
+    return '<div class="rx">' + list.map(function (r) {
+      var both = r.gas.every(function (g) { return here.indexOf(g) > -1; });
+      var parts = r.gas.map(function (g) {
+        return here.indexOf(g) > -1 ? '<span class="here">' + g + " (in this site)</span>" : g + " (buy or find elsewhere)";
+      }).join(" + ");
+      return '<div class="rx-item"><strong>' + esc(r.out) + "</strong>" + (both ? '<span class="tag both">both gases here</span>' : "") +
+        '<div class="rx-sub">' + parts + " &middot; " + esc(r.mineral) + " &middot; 5 " + r.fuel + " fuel blocks</div></div>";
+    }).join("") + "</div>";
+  }
+
+  /* ---------- a site row ---------- */
+  function siteHtml(s, h) {
+    var tv = totalValue(s), t = TIERS[s.tier];
+    var gasRows = s.gas.map(function (x) {
+      var g = GAS[x.g];
+      return "<tr><td><span class=\"gc\">" + x.g + "</span></td>" +
+        '<td class="n">' + fmt(x.m3) + '</td><td class="n">' + fmt(x.m3 / g.vol) + '</td>' +
+        '<td class="n">' + fmt(g.ppm) + '</td><td class="n">' + fmtM(x.m3 * g.ppm) + '</td><td class="n">' + x.h + " h</td></tr>";
+    }).join("");
+    var slRows = s.sleepers.map(function (z) {
+      return "<tr><td class=\"n\">" + z.n + "&times;</td><td>" + esc(z.name) + "</td><td>" + z.cls + "</td><td>" + esc(z.role) +
+        '</td><td class="n">' + fmt(z.ehp) + '</td><td class="n">' + z.sig + '</td><td class="n">' + fmt(z.spd) + '</td><td class="n">' + z.rng + "</td></tr>";
+    }).join("");
+    var open = openSet[s.id] ? " open" : "";
+    return '<li><details class="site" id="site-' + s.id + '" data-id="' + s.id + '"' + open + ">" +
+      "<summary>" +
+        '<span class="cell name"><span class="site-name">' + esc(s.name) + '</span><span class="lab">' + t.label + " &middot; " + t.classes + "</span></span>" +
+        '<span class="cell gases"><span class="lab">Gas</span><span class="gaschips">' + s.gas.map(function (x) { return '<span class="gc">' + x.g + "</span>"; }).join("") + "</span></span>" +
+        '<span class="cell"><span class="lab">Total gas</span><span class="val">' + fmt(totalM3(s)) + " m³</span></span>" +
+        '<span class="cell"><span class="lab">Site value</span><span class="val">' + fmtM(tv) + "</span></span>" +
+        '<span class="cell"><span class="lab">Haul, ' + state.mins + ' min</span><span class="val">' + fmtM(h.isk) + "</span></span>" +
+        '<span class="cell"><span class="lab">Sleeper DPS</span><span class="pill ' + threat(s.dps) + '">' + fmt(s.dps) + "</span></span>" +
+      "</summary>" +
+      '<div class="body">' +
+        "<h3>Gas in the site</h3>" +
+        '<div class="tbl"><table><thead><tr><th>Gas</th><th class="n">m³</th><th class="n">Units</th><th class="n">ISK per m³</th><th class="n">Value (ISK)</th><th class="n">Clear time</th></tr></thead><tbody>' + gasRows + "</tbody></table></div>" +
+        '<p class="meta">Clear time is for one Venture with T2 scoops and Mining Frigate V, per the wiki.</p>' +
+        "<h3>What the gas makes</h3>" + reactionsFor(s) +
+        "<h3>Sleepers</h3>" +
+        '<div class="tbl"><table><thead><tr><th class="n">Count</th><th>Name</th><th>Class</th><th>Role</th><th class="n">EHP</th><th class="n">Sig</th><th class="n">Speed m/s</th><th class="n">Range</th></tr></thead><tbody>' + slRows + "</tbody></table></div>" +
+        '<div class="facts"><p><strong>Total DPS:</strong> <span class="mono">' + fmt(s.dps) + "</span></p>" +
+          "<p><strong>Neut:</strong> <span class=\"mono\">" + (s.neut ? s.neut + " GJ/s" : "not listed") + "</span></p>" +
+          "<p><strong>Blue loot:</strong> <span class=\"mono\">" + s.loot.toFixed(1) + "M ISK</span></p></div>" +
+        s.notes.map(function (n) { return '<p class="note">' + esc(n) + "</p>"; }).join("") +
+      "</div></details></li>";
+  }
+
+  function renderSites() {
+    var list = SITES.filter(function (s) { return state.tier === "all" || s.tier === state.tier; });
+    var hauls = {};
+    list.forEach(function (s) { hauls[s.id] = haul(s, state.mins, SHIPS[state.ship]); });
+    list.sort(function (a, b) {
+      if (state.sort === "value") return totalValue(b) - totalValue(a);
+      if (state.sort === "haul") return hauls[b.id].isk - hauls[a.id].isk;
+      if (state.sort === "dps") return a.dps - b.dps;
+      return totalM3(b) - totalM3(a);
+    });
+    $("sites").innerHTML = list.length ? list.map(function (s) { return siteHtml(s, hauls[s.id]); }).join("") : '<li class="empty">No sites match.</li>';
+    Array.prototype.forEach.call(document.querySelectorAll("details.site"), function (d) {
+      d.addEventListener("toggle", function () { openSet[d.getAttribute("data-id")] = d.open; });
+    });
+  }
+
+  /* ---------- gas explorer ---------- */
+  function renderGasBtns() {
+    $("gasBtns").innerHTML = GAS_ORDER.map(function (g) {
+      return '<button type="button" class="gasbtn" data-gas="' + g + '" aria-pressed="' + (state.gas === g) + '"><b>' + g + "</b><span>" + fmt(GAS[g].ppm) + " ISK/m³</span></button>";
+    }).join("");
+  }
+  function renderGasPanel() {
+    var g = state.gas, d = GAS[g];
+    var rx = REACTIONS.filter(function (r) { return r.gas.indexOf(g) > -1; });
+    var sites = SITES.filter(function (s) { return siteGasNames(s).indexOf(g) > -1; });
+    var left = "<div><h3>Fullerite-" + g + "</h3><p class=\"mono\">" + d.vol + " m³ per unit &middot; " + fmt(d.ppm * d.vol) + " ISK per unit &middot; " + fmt(d.ppm) + " ISK per m³</p>" +
+      "<h3>Reacts into</h3><div class=\"rx\">" + rx.map(function (r) {
+        var partner = r.gas.filter(function (x) { return x !== g; })[0];
+        return '<div class="rx-item"><strong>' + esc(r.out) + '</strong><div class="rx-sub">with ' + partner + " &middot; " + esc(r.mineral) + " &middot; 5 " + r.fuel + " fuel blocks</div></div>";
+      }).join("") + "</div></div>";
+    var right = "<div><h3>Found in</h3>" + sites.map(function (s) {
+      var x = s.gas.filter(function (y) { return y.g === g; })[0];
+      return '<button type="button" class="sitechip" data-site="' + s.id + '"><strong>' + esc(s.name) + '</strong><br><span class="mono">' + fmt(x.m3) + " m³ &middot; " + fmtM(x.m3 * d.ppm) + " ISK &middot; Sleeper DPS " + fmt(s.dps) + "</span></button>";
+    }).join("") + "</div>";
+    $("gasPanel").innerHTML = left + right;
+  }
+
+  /* ---------- events ---------- */
+  function refresh() { renderTierChips(); renderSites(); }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-tier],[data-gas],[data-site]");
+    if (!t) return;
+    if (t.hasAttribute("data-tier")) { state.tier = t.getAttribute("data-tier"); refresh(); }
+    else if (t.hasAttribute("data-gas")) { state.gas = t.getAttribute("data-gas"); renderGasBtns(); renderGasPanel(); }
+    else if (t.hasAttribute("data-site")) {
+      var id = t.getAttribute("data-site");
+      state.tier = "all"; openSet[id] = true; refresh();
+      var el = $("site-" + id);
+      if (el) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    }
+  });
+  $("sort").addEventListener("change", function (e) { state.sort = e.target.value; renderSites(); });
+  $("ship").addEventListener("change", function (e) { state.ship = +e.target.value; renderSites(); });
+  $("mins").addEventListener("input", function (e) {
+    state.mins = +e.target.value;
+    $("minsOut").textContent = state.mins + " min";
+    $("warn").textContent = state.mins > 15 ? "Sleepers can arrive about 15 to 20 minutes after you land. At " + state.mins + " minutes you are likely fighting or running." : "";
+    renderSites();
+  });
+
+  /* ---------- ships ---------- */
+  function renderShips() {
+    $("ship").innerHTML = SHIPS.map(function (x, i) {
+      return '<option value="' + i + '">' + x.name + " (" + fmt(x.hold) + " m³ hold)</option>";
+    }).join("");
+    var rows = SHIPS.map(function (x) {
+      var perMin = x.rate / 60;
+      return "<tr><td><strong>" + esc(x.name) + "</strong>" + (x.est ? '<span class="est">Estimate</span>' : "") + "<br><span class=\"rx-sub\">" + x.cls + "</span></td>" +
+        '<td class="n">' + fmt(x.hold) + '</td><td class="n">' + x.scoops + '</td><td class="n">' + fmt(x.rate) + '</td>' +
+        '<td class="n">' + fmt(perMin * 15) + '</td><td class="n">' + Math.round(x.hold / perMin) + ' min</td>' +
+        '<td class="n">' + x.spd + '</td><td class="n">' + x.sig + "</td><td>" + esc(x.note) + "</td></tr>";
+    }).join("");
+    $("shipTbl").innerHTML = '<thead><tr><th>Ship</th><th class="n">Hold m³</th><th class="n">Scoops</th><th class="n">m³/h</th><th class="n">m³ in 15 min</th><th class="n">Time to fill</th><th class="n">Speed m/s</th><th class="n">Sig m</th><th>Notes</th></tr></thead><tbody>' + rows + "</tbody>";
+  }
+
+  /* ---------- go ---------- */
+  openSet.vital = true;
+  renderShips(); refresh(); renderGasBtns(); renderGasPanel();
+})();
+</script>
+</body>
+</html>
