@@ -107,6 +107,13 @@ dl.kv dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nu
 .cl4 { color: var(--c4); font-weight: 600; } .cl5 { color: var(--c5); font-weight: 700; } .cl6 { color: var(--c6); font-weight: 600; }
 .chip.cc { border-color: currentColor; font-weight: 600; }
 .chip.cc[aria-pressed="true"] { border-color: var(--accent); }
+.pos { color: var(--ok); } .neg { color: var(--bad); }
+td.hl, th.hl { background: var(--accent-soft); }
+td.v, th.v { text-align: right; padding-right: 12px; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sitegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 10px; }
+.sitegrid h3 { margin: 6px 0 6px; font-size: 1.05rem; }
+.sitegrid ul { margin: 0; padding-left: 18px; font-size: 0.93rem; }
+.sitegrid li { margin-bottom: 3px; }
 .note { margin: 10px 0 0; padding: 8px 10px; border-left: 3px solid var(--warn); background: var(--warn-soft); font-size: 0.92rem; border-radius: 0 6px 6px 0; }
 .empty { padding: 18px; text-align: center; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
 
@@ -191,6 +198,21 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
     <p class="meta">Every home system carries one static, or two in C2 and C4. When a static collapses, a new one spawns straight away to the same class of space.</p>
     <div class="tabs" id="classTabs" role="group" aria-label="System class"></div>
     <div class="panelbox" id="classPanel"></div>
+  </section>
+
+  <section class="block" id="effects">
+    <h2>Wormhole effects</h2>
+    <p class="meta">Each effect scales with the class of the system you are in. Pick the effect, then your class to highlight its column.</p>
+    <div class="tabs" id="effTabs" role="group" aria-label="Effect"></div>
+    <div class="tabs" id="effClass" role="group" aria-label="Highlight class"></div>
+    <div class="panelbox tbl"><table id="effTbl"></table></div>
+  </section>
+
+  <section class="block" id="sitesByClass">
+    <h2>Sites by class</h2>
+    <p class="meta">Which sites turn up in each class of system. Combat sites are the wiki's cosmic anomalies. Gas site numbers and Sleepers are in the <a href="../gas/" style="color:var(--accent)">Gas Huffer's Chart</a>.</p>
+    <div class="tabs" id="siteTabs" role="group" aria-label="System class"></div>
+    <div class="panelbox" id="sitePanel"></div>
   </section>
 
   <section class="block" id="drifters">
@@ -436,6 +458,88 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
 
   render();
   showClass(cur);
+
+  // ---------- effects ----------
+  var EFF = {
+    "Pulsar": [["Shield capacity","+",30,14],["Armor resists","-",15,7],["Capacitor recharge time","-",15,7],["Signature radius","+",30,14],["NOS and neut drain amount","+",30,14]],
+    "Black Hole": [["Missile velocity","+",15,7],["Missile explosion velocity","+",30,14],["Vorton Projectors explosion velocity","+",30,14],["Ship velocity","+",30,14],["Stasis webifier strength","-",15,7],["Inertia","+",15,7],["Targeting range","+",30,14]],
+    "Cataclysmic Variable": [["Local armor repair amount","-",15,7],["Remote armor repair amount","+",30,14],["Local shield repair amount","-",15,7],["Shield transfer amount","+",30,14],["Capacitor capacity","+",30,14],["Capacitor recharge time","+",15,7],["Remote cap transmitter amount","-",15,7]],
+    "Magnetar": [["Weapon damage","+",30,14],["Missile explosion radius","+",30,14],["Vorton Projectors explosion radius","+",30,14],["Drone tracking","-",15,7],["Targeting range","-",15,7],["Tracking speed","-",15,7],["Target painter strength","-",15,7]],
+    "Red Giant": [["Heat damage","+",15,7],["Overload bonus","+",30,14],["Smart bomb range","+",30,14],["Smart bomb damage","+",30,14],["Bomb damage","+",30,14]],
+    "Wolf Rayet": [["Armor HP","+",30,14],["Shield resist","-",15,7],["Small weapon damage","+",60,28],["Signature radius","-",15,7]]
+  };
+  // each row: label, sign, C1 value, step per class (C1..C6 = v + step*(n-1)), as listed by the wiki
+  var effCur = "Pulsar", effHl = 0;
+  function effRowVals(r) { var out = []; for (var i = 0; i < 6; i++) out.push(r[2] + r[3] * i); return out; }
+  function showEffect() {
+    Array.prototype.forEach.call(el("effTabs").children, function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === effCur ? "true" : "false"); });
+    Array.prototype.forEach.call(el("effClass").children, function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-v") === effHl ? "true" : "false"); });
+    var head = '<thead><tr><th>Effect</th>';
+    for (var i = 1; i <= 6; i++) head += '<th class="v' + (effHl === i ? " hl" : "") + '">' + cls("C" + i) + "</th>";
+    var body = EFF[effCur].map(function (r) {
+      var v = effRowVals(r), sign = r[1] === "+" ? "+" : "\u2212";
+      // the wiki's values: +30,44,58,72,86,100 and -15,-22,-29,-36,-43,-50; keep them exact
+      var exact = r[1] === "+" ? [30,44,58,72,86,100] : [15,22,29,36,43,50];
+      if (r[2] === 60) exact = [60,88,116,144,172,200];
+      if (r[2] === 15 && r[1] === "+") exact = [15,22,29,36,43,50];
+      var good = (r[1] === "+");
+      var tr = "<tr><td>" + r[0] + "</td>";
+      for (var j = 0; j < 6; j++) tr += '<td class="v ' + (good ? "pos" : "neg") + (effHl === j + 1 ? " hl" : "") + '">' + sign + exact[j] + "%</td>";
+      return tr + "</tr>";
+    }).join("");
+    el("effTbl").innerHTML = head + "</tr></thead><tbody>" + body + "</tbody>";
+  }
+  Object.keys(EFF).forEach(function (n) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = n; b.setAttribute("data-v", n); b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () { effCur = n; showEffect(); });
+    el("effTabs").appendChild(b);
+  });
+  [["All", 0], ["C1", 1], ["C2", 2], ["C3", 3], ["C4", 4], ["C5", 5], ["C6", 6]].forEach(function (c) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip" + (c[1] ? " cc cl" + c[1] : ""); b.textContent = c[0] === "All" ? "No highlight" : c[0]; b.setAttribute("data-v", c[1]); b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () { effHl = c[1]; showEffect(); });
+    el("effClass").appendChild(b);
+  });
+  showEffect();
+
+  // ---------- sites by class ----------
+  var PERI_GAS = ["Barren Perimeter Reservoir","Minor Perimeter Reservoir","Ordinary Perimeter Reservoir","Sizable Perimeter Reservoir","Token Perimeter Reservoir"];
+  var FRON_GAS = ["Bountiful Frontier Reservoir","Vast Frontier Reservoir"];
+  var CORE_GAS = ["Instrumental Core Reservoir","Vital Core Reservoir"];
+  var PERI_ORE = ["Common Perimeter Deposit","Ordinary Perimeter Deposit"];
+  var FRON_ORE = ["Average Frontier Deposit","Unexceptional Frontier Deposit"];
+  var CORE_ORE = ["Exceptional Core Deposit","Infrequent Core Deposit","Isolated Core Deposit","Rarified Core Deposit","Uncommon Core Deposit","Unusual Core Deposit"];
+  var SITES_BY = {
+    "C1": { combat: ["Perimeter Ambush Point","Perimeter Camp","Phase Catalyst Node","The Line"], data: ["Unsecured Perimeter Amplifier","Unsecured Perimeter Information Center"], relic: ["Forgotten Perimeter Coronation Platform","Forgotten Perimeter Power Array"], gas: PERI_GAS, ore: PERI_ORE },
+    "C2": { combat: ["Perimeter Checkpoint","Perimeter Hangar","The Ruins of Enclave Cohort 27","Sleeper Data Sanctuary"], data: ["Unsecured Perimeter Comms Relay","Unsecured Perimeter Transponder Farm"], relic: ["Forgotten Perimeter Gateway","Forgotten Perimeter Habitation Coils"], gas: PERI_GAS, ore: PERI_ORE.concat(FRON_ORE) },
+    "C3": { combat: ["Fortification Frontier Stronghold","Outpost Frontier Stronghold","Solar Cell","The Oruze Construct"], data: ["Unsecured Frontier Database","Unsecured Frontier Receiver"], relic: ["Forgotten Frontier Quarantine Outpost","Forgotten Frontier Recursive Depot"], gas: PERI_GAS.concat(FRON_GAS), ore: PERI_ORE.concat(FRON_ORE) },
+    "C4": { combat: ["Frontier Barracks","Frontier Command Post","Integrated Terminus","Sleeper Information Sanctum"], data: ["Unsecured Frontier Digital Nexus","Unsecured Frontier Trinary Hub"], relic: ["Forgotten Frontier Conversion Module","Forgotten Frontier Evacuation Center"], gas: PERI_GAS.concat(FRON_GAS), ore: PERI_ORE.concat(FRON_ORE) },
+    "C5": { combat: ["Core Garrison","Core Stronghold","Oruze Osobnyk","Quarantine Area"], data: ["Unsecured Frontier Enclave Relay","Unsecured Frontier Server Bank"], relic: ["Forgotten Core Data Field","Forgotten Core Information Pen"], gas: FRON_GAS.concat(CORE_GAS), ore: PERI_ORE.concat(FRON_ORE, CORE_ORE) },
+    "C6": { combat: ["Core Citadel","Core Bastion","Strange Energy Readings","The Mirror"], data: ["Unsecured Core Backup Array","Unsecured Core Emergence"], relic: ["Forgotten Core Assembly Hall","Forgotten Core Circuitry Disassembler"], gas: FRON_GAS.concat(CORE_GAS), ore: PERI_ORE.concat(FRON_ORE, CORE_ORE) },
+    "Shattered": { combat: [], data: [], relic: [], gas: CORE_GAS, ore: ["Shattered Debris Field","Shattered Ice Field"] }
+  };
+  var siteCur = "C5";
+  function showSites(c) {
+    siteCur = c;
+    Array.prototype.forEach.call(el("siteTabs").children, function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === c ? "true" : "false"); });
+    var d = SITES_BY[c];
+    function col(title, list) {
+      if (!list.length) return "";
+      return "<div><h3>" + title + "</h3><ul>" + list.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul></div>";
+    }
+    var html = '<div class="sitegrid">' + col("Combat sites", d.combat) + col("Data sites", d.data) + col("Relic sites", d.relic) + col("Gas sites", d.gas) + col(c === "Shattered" ? "Ore and ice" : "Ore sites", d.ore) + "</div>";
+    if (c === "Shattered") html += '<p class="note">The wiki lists no combat, data or relic sites for shattered systems.</p>';
+    if (c === "C2") html += '<p class="note">The wiki says core ore deposits can occasionally spawn in low-class wormholes, though it is fairly rare.</p>';
+    el("sitePanel").innerHTML = html;
+  }
+  Object.keys(SITES_BY).forEach(function (c) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip" + (/^C/.test(c) ? " cc cl" + c[1] : ""); b.textContent = c; b.setAttribute("data-v", c); b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () { showSites(c); });
+    el("siteTabs").appendChild(b);
+  });
+  showSites(siteCur);
 })();
 </script>
 </body>
