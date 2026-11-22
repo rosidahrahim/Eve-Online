@@ -114,6 +114,7 @@ td.v, th.v { text-align: right; padding-right: 12px; font-family: var(--mono); f
 .sitegrid h3 { margin: 6px 0 6px; font-size: 1.05rem; }
 .sitegrid ul { margin: 0; padding-left: 18px; font-size: 0.93rem; }
 .sitegrid li { margin-bottom: 3px; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: -1px; border: 1px solid var(--line); }
 .note { margin: 10px 0 0; padding: 8px 10px; border-left: 3px solid var(--warn); background: var(--warn-soft); font-size: 0.92rem; border-radius: 0 6px 6px 0; }
 .empty { padding: 18px; text-align: center; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
 
@@ -215,6 +216,49 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
     <div class="panelbox" id="sitePanel"></div>
   </section>
 
+  <section class="block" id="spot">
+    <h2>Spot it in space</h2>
+    <p class="meta">What a hole looks like tells you where it goes and how big a ship fits, before you open Show Info. Treat the look as a first guess and confirm in Show Info. Looking at the hole turns the skybox, which can show more detail.</p>
+
+    <h3>Core colour: where it leads</h3>
+    <div class="panelbox tbl"><table>
+      <thead><tr><th>Leads to</th><th>What the core looks like</th></tr></thead>
+      <tbody>
+        <tr><td class="c">C1</td><td>Grayish clouds with black spots and some blue and cyan. Often little detail, so it can pass for C2 or C3.</td></tr>
+        <tr><td class="c">C2</td><td>Brownish hue with gray clouds. The key sign is a black spot in a light gray cloud.</td></tr>
+        <tr><td class="c">C3</td><td>Grayish clouds with a distinct red cloud.</td></tr>
+        <tr><td class="c">C4</td><td>Mainly dark red, one bright white cloud and distinct black spots. The colour is unique to C4.</td></tr>
+        <tr><td class="c">C5</td><td>Dark red with brown hues. The white cloud is dimmer than in C4.</td></tr>
+        <tr><td class="c">C6</td><td>Very chromatic orange with black details.</td></tr>
+        <tr><td class="c">Highsec</td><td>Takes the colour of the empire's nebula: Amarr gold, Caldari blue, Gallente green, Minmatar red.</td></tr>
+        <tr><td class="c">Thera, Drifter, shattered</td><td>A shared skybox. Thera, C13 frigate-size shattered holes and Drifter holes show it. Not every shattered hole does.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="meta" style="margin-top:8px">The wiki gives no description for lowsec or nullsec cores.</p>
+
+    <h3>Aurora colour: biggest ship that fits</h3>
+    <div class="panelbox tbl"><table>
+      <thead><tr><th>Aurora</th><th>Size band</th><th>What passes</th></tr></thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:#3b6fe0"></span>Royal blue</td><td>Small</td><td>Destroyer mass and below, up to 5M kg per ship. Includes the Porpoise. Mining barges do not fit.</td></tr>
+        <tr><td><span class="dot" style="background:#1fb5a5"></span>Teal</td><td>Medium</td><td>Cruisers, battlecruisers and industrials, at 20M or 62M kg depending on type. The Nestor is the only battleship that fits.</td></tr>
+        <tr><td><span class="dot" style="background:#8a96a3"></span>Gray</td><td>Large</td><td>Every ship below capital hulls except the Bowhead, up to 300M kg.</td></tr>
+        <tr><td><span class="dot" style="background:#e0b72a"></span>Yellow</td><td>Capital</td><td>Freighters and capitals, at 1,000M, 1,350M or 1,800M kg.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Quick rules</h3>
+    <div class="panelbox">
+      <dl class="kv" style="margin-top:10px">
+        <dt>White aura</dt><dd>Cannot lead to <span class="cl1">C1</span>. A C1 connection is never larger than medium, apart from frigate holes.</dd>
+        <dt>Orange aura</dt><dd>A <span class="cl4">C4</span> connection is never very large, so an orange aura or very large capacity points to <span class="cl5">C5</span>.</dd>
+        <dt>Hole age</dt><dd>With 24 to 4 hours left the aurora wiggles more. Under 4 hours it fades and loses defined shapes.</dd>
+        <dt>Mass shrink</dt><dd>The hole visibly shrinks when it drops to 50% and again at 10% mass.</dd>
+      </dl>
+      <p class="note">Show Info states the real numbers: lifetime of more than a day, under 4 hours, under 1 hour or expired, and mass of more than 50%, under 50% or under 10%. The wiki says claims that the effect intensifies near closing are anecdotal.</p>
+    </div>
+  </section>
+
   <section class="block" id="drifters">
     <h2>Drifter holes</h2>
     <p class="meta">Five Drifter systems, each reached from known space through one unique signature. Each holds six statics: Z647, D382, O477, Y683, N062 and R474, which lead to C1 through C6.</p>
@@ -248,7 +292,7 @@ footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); max-width: 7
   </section>
 
   <footer>
-    Source: EVE University Wiki (Wormhole attributes, Wormhole space), content under CC BY-SA 4.0. Statics listed are the wiki's per-class sets. Check a hole's mass state in Show Info before rolling it.
+    Source: EVE University Wiki (Wormhole attributes, Wormhole space, Wormhole sites, Visual wormhole identification), content under CC BY-SA 4.0. Statics listed are the wiki's per-class sets. Check a hole's mass state in Show Info before rolling it.
   </footer>
 </div>
 
