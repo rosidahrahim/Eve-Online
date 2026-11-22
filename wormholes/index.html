@@ -15,7 +15,7 @@
   --ink: #14222e;
   --muted: #55677a;
   --line: #d2dae2;
-  --accent: #0a6f8c;
+  --accent: #0a6f8c; --duck: #973231;
   --accent-soft: #dcf0f5;
   --ok: #1d7a46;
   --ok-soft: #dff3e7;
@@ -31,14 +31,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0e1a24; --panel: rgba(20,36,47,.82); --ink: #e5edf3; --muted: #93a7b8; --line: #27394a;
-    --accent: #55c4e2; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
+    --accent: #55c4e2; --duck: #c75757; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
     --warn: #f0b24c; --warn-soft: #3d2f10; --bad: #ff8b82; --bad-soft: #43201e;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0e1a24; --panel: rgba(20,36,47,.82); --ink: #e5edf3; --muted: #93a7b8; --line: #27394a;
-  --accent: #55c4e2; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
+  --accent: #55c4e2; --duck: #c75757; --accent-soft: #123a47; --ok: #5fd08c; --ok-soft: #14392a;
   --warn: #f0b24c; --warn-soft: #3d2f10; --bad: #ff8b82; --bad-soft: #43201e;
   color-scheme: dark;
 }
@@ -48,7 +48,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--body); font-
 .bg-logo { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 75vmax; height: 75vmax; max-width: none; opacity: .14; pointer-events: none; z-index: 0; user-select: none; }
 .wrap { position: relative; z-index: 1; max-width: 1060px; margin: 0 auto; padding: 28px 16px 64px; }
 h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: 0.01em; text-wrap: balance; margin: 0; }
-h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1; color: var(--duck); }
 h2 { font-size: 1.7rem; margin-bottom: 6px; }
 h3 { font-size: 1.15rem; margin: 18px 0 8px; }
 .back { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 18px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--accent); font-size: 0.9rem; font-weight: 600; text-decoration: none; }
