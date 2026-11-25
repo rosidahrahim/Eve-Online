@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Covert Ops Hacking Comparison — Helios, Anathema, Cheetah, Imicus Navy Issue</title>
+<meta name="description" content="Side-by-side stats for Helios, Anathema, Cheetah and Imicus Navy Issue, and which one is best for hacking relic and data sites.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1a24;--panel:rgba(20,36,47,.82);--ink:#e5edf3;--muted:#93a7b8;--line:#27394a;--accent:#55c4e2;--duck:#c75757;
+--best:#a8d62a;--worst:#f0845a;--dim:#6b747c;--eve-bg:rgba(7,9,12,.9);--eve-line:rgba(255,255,255,.07);--eve-label:#c3cbd2;--eve-sec:#9aa4ac;--eve-val:#e8ecef;
+--display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+.bg-logo{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:75vmax;height:75vmax;max-width:none;opacity:.14;pointer-events:none;z-index:0;user-select:none}
+.wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:28px 16px 64px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.4rem);line-height:1;color:var(--duck)}
+h2{font-size:1.7rem;margin:34px 0 8px}
+.back{display:inline-flex;align-items:center;gap:6px;margin:0 0 18px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--accent);font-size:.9rem;font-weight:600;text-decoration:none}
+.back:hover,.back:focus-visible{border-color:var(--accent);outline:none}
+.lede{max-width:64ch;font-size:1.1rem;margin:10px 0 6px}
+.meta{color:var(--muted);font-size:.88rem;margin:0;max-width:74ch}
+.verdict{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:22px 0 0;padding:16px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--best);border-radius:10px}
+.verdict img{width:72px;height:72px;border-radius:6px;background:#050709;object-fit:cover}
+.verdict h2{margin:0 0 2px;font-size:1.6rem}
+.verdict p{margin:0;color:var(--ink);max-width:70ch}
+.verdict .no{color:var(--worst)}
+.controls{display:flex;flex-wrap:wrap;gap:8px 20px;margin:26px 0 10px;font-size:.92rem}
+.controls label{display:inline-flex;gap:8px;align-items:center;color:var(--muted);cursor:pointer}
+.controls input{accent-color:var(--accent);width:16px;height:16px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.85rem;margin:0 0 10px}
+.legend i{font-style:normal;font-family:var(--mono)}
+.legend .b{color:var(--best)}.legend .w{color:var(--worst)}
+.tablewrap{overflow-x:auto;border:1px solid var(--eve-line);border-radius:6px;background:var(--eve-bg);-webkit-overflow-scrolling:touch}
+table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:.9rem}
+.cmp th,.cmp td{padding:0}
+.cmp thead th{padding:14px 6px 10px;font-weight:400}
+.cmp .corner{width:36%}
+.cmp .ship{text-align:center;width:16%}
+.pic{position:relative;display:inline-block;width:60px;height:60px;background:#050709;border:1px solid rgba(255,255,255,.14);overflow:hidden}
+.pic img{position:absolute;inset:0;width:60px;height:60px;object-fit:cover;display:block}
+.pic b{position:absolute;inset:0;display:grid;place-items:center;font:700 1.6rem var(--display);color:#3a444c;z-index:0}
+.pic img{z-index:1}
+.pic::after{content:"";position:absolute;left:0;top:0;width:9px;height:9px;z-index:2;background:#e8892b}
+.pic.fac::after{background:#4fd16a}
+.sname{display:block;margin-top:6px;font-size:.82rem;color:var(--eve-label)}
+.cmp tbody.grp+tbody.grp tr.sec th{padding-top:18px}
+tr.sec th{text-align:left;padding:14px 12px 6px;font-weight:400}
+tr.sec button{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;font:600 .95rem var(--body);letter-spacing:.02em;color:var(--eve-sec)}
+tr.sec button:hover,tr.sec button:focus-visible{color:#fff}
+tr.sec button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.car{display:inline-block;width:1em;transition:transform .12s}
+tbody.collapsed .car{transform:rotate(-90deg)}
+tbody.collapsed tr.row{display:none}
+tr.row th,tr.row td{border-top:1px solid transparent;padding:8px 6px}
+tr.row th{text-align:left;font-weight:400;color:var(--eve-label);display:flex;gap:10px;align-items:center;padding-left:12px;line-height:1.2}
+tr.row:hover th,tr.row:hover td{background:rgba(255,255,255,.035)}
+.ico{flex:none;width:22px;height:22px;fill:none;stroke:#aeb8c0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ic-em{stroke:#4fa8ff}.ic-thermal{stroke:#ff5a3c}.ic-kinetic{stroke:#e8ecef}.ic-explosive{stroke:#ff9a3c}
+td.v{text-align:right;padding-right:14px;font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--eve-val);white-space:nowrap}
+.hl td.v.b{color:var(--best)}
+.hl td.v.w{color:var(--worst)}
+td.v.d{color:var(--dim)}
+.hl td.v.b.d{color:var(--dim)}
+.diff-only tr.row[data-same="1"]{display:none}
+.hack-only tr.row[data-hack="0"]{display:none}
+.diff-only tbody.collapsed tr.row,.hack-only tbody.collapsed tr.row{display:none}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+table.score{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem;background:var(--panel)}
+.score th,.score td{padding:10px 12px;border-top:1px solid var(--line);text-align:left;vertical-align:top}
+.score thead th{border-top:0;color:var(--muted);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+.score tbody th{font-weight:500}
+.score td.win{color:var(--best);font-weight:600;white-space:nowrap}
+.score td:last-child{color:var(--muted)}
+ul.tips{margin:8px 0 0;padding-left:20px;max-width:78ch}
+ul.tips li{margin:0 0 9px}
+ul.tips b{color:var(--accent)}
+a{color:var(--accent)}
+.src{font-size:.88rem;color:var(--muted)}
+.src ul{padding-left:20px;margin:6px 0 0}
+footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:.8rem}
+@media (max-width:640px){tr.row th,tr.sec th{position:sticky;left:0}tr.row th{background:#0a0d11;min-width:150px;font-size:.8rem;gap:8px;padding-left:8px}.ico{width:18px;height:18px}tr.sec th{background:#0a0d11}table.cmp{min-width:620px}}
+@media (prefers-reduced-motion:reduce){.car{transition:none}}
+</style>
+</head>
+<body>
+<img class="bg-logo" src="../gas/logo.webp" alt="" aria-hidden="true">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-coin" viewBox="0 0 24 24"><ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/></symbol>
+<symbol id="i-ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/></symbol>
+<symbol id="i-atom" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="3.5"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.2"/></symbol>
+<symbol id="i-cloak" viewBox="0 0 24 24"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.5"/><path d="M4 20L20 4"/></symbol>
+<symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/></symbol>
+<symbol id="i-em" viewBox="0 0 24 24"><path d="M13 3L5 13h6l-1 8 8-10h-6z"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L5 13h6l-1 8 8-10h-6z"/></symbol>
+<symbol id="i-thermal" viewBox="0 0 24 24"><path d="M12 3c1 4 5 5.5 5 10a5 5 0 01-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9z"/></symbol>
+<symbol id="i-kinetic" viewBox="0 0 24 24"><path d="M3 12h15M13 6l6 6-6 6"/></symbol>
+<symbol id="i-explosive" viewBox="0 0 24 24"><path d="M12 2l2 6 6-2-3 5 5 3-6 1 1 6-5-4-5 4 1-6-6-1 5-3-3-5 6 2z"/></symbol>
+<symbol id="i-armor" viewBox="0 0 24 24"><path d="M7 4h10l4 8-4 8H7l-4-8z"/><path d="M9 9h6M9 15h6"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></symbol>
+<symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
+<symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></symbol>
+<symbol id="i-range" viewBox="0 0 24 24"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></symbol>
+<symbol id="i-crosshair" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></symbol>
+<symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M4 12h16"/></symbol>
+<symbol id="i-drone" viewBox="0 0 24 24"><path d="M12 4l7 8-7 8-7-8z"/><circle cx="12" cy="12" r="2"/></symbol>
+<symbol id="i-chevrons" viewBox="0 0 24 24"><path d="M5 6l6 6-6 6M12 6l6 6-6 6"/></symbol>
+<symbol id="i-weight" viewBox="0 0 24 24"><path d="M7 8h10l3 12H4z"/><circle cx="12" cy="5" r="2"/></symbol>
+<symbol id="i-battery" viewBox="0 0 24 24"><rect x="3" y="8" width="15" height="9" rx="1.5"/><path d="M21 11v3M8 12.5h5"/></symbol>
+<symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+<symbol id="i-slotH" viewBox="0 0 24 24"><path d="M12 12l-7-4M12 12l7-4M12 12v8"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-slotM" viewBox="0 0 24 24"><path d="M4 9h6M14 9h6M4 15h6M14 15h6"/></symbol>
+<symbol id="i-slotL" viewBox="0 0 24 24"><path d="M12 4v16"/></symbol>
+<symbol id="i-turret" viewBox="0 0 24 24"><path d="M3 19h18M8 19v-6h8v6M12 13V6M12 6h6"/></symbol>
+<symbol id="i-launcher" viewBox="0 0 24 24"><path d="M4 14l10-6 6 3-10 6z"/><path d="M4 14v3"/></symbol>
+<symbol id="i-rig" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M4 8l8-4 8 4v9l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v9"/></symbol>
+</svg>
+<div class="wrap">
+  <a class="back" href="../">← Back to index</a>
+  <h1>Covert Ops Hacking Comparison</h1>
+  <p class="lede">Helios, Anathema, Cheetah and Imicus Navy Issue side by side, laid out like the in-game compare window, with a verdict on which one hacks relic and data sites best.</p>
+  <p class="meta">Base values from the in-game compare window: no skills, modules or rigs. Prices are estimated ISK as shown in the client on the day of capture (2026-11-25).</p>
+
+  <section class="verdict" aria-labelledby="verdict-h">
+    <img src="https://images.evetech.net/types/11172/render?size=128" width="72" height="72" alt="Helios" referrerpolicy="no-referrer" onerror="this.remove()">
+    <div>
+      <h2 id="verdict-h">Verdict: Helios</h2>
+      <p>Helios, Anathema and Cheetah all carry the same +10 Analyzer Virus Strength Bonus and the 5s cloak delay. Helios wins the tie-break with the most CPU (290 tf), the most raw HP of the covert ops (1,618) and five mid slots. <span class="no">Imicus Navy Issue is out</span> for hacking: its bonus is only +5 and it isn't flagged for the Covert Ops cloak.</p>
+    </div>
+  </section>
+
+  <h2>Full stat comparison</h2>
+  <div class="controls">
+    <label><input type="checkbox" id="opt-hl" checked> Highlight best / lowest</label>
+    <label><input type="checkbox" id="opt-diff"> Differences only</label>
+    <label><input type="checkbox" id="opt-hack"> Hacking-relevant rows only</label>
+  </div>
+  <p class="legend"><span><i class="b">■</i> best of the four</span><span><i class="w">■</i> lowest of the four</span><span>Click a section title to collapse it.</span></p>
+  <div class="tablewrap">
+    <table class="cmp" id="cmp">
+      <caption class="vh">Stat comparison of Helios, Anathema, Cheetah, Imicus Navy Issue</caption>
+      <thead><tr><th class="corner" scope="col"><span class="vh">Stat</span></th><th class="ship" scope="col"><span class="pic t2" title="Tech II"><img src="https://images.evetech.net/types/11172/render?size=128" width="60" height="60" alt="Helios" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><b>H</b></span><span class="sname">Helios</span></th><th class="ship" scope="col"><span class="pic t2" title="Tech II"><img src="https://images.evetech.net/types/11188/render?size=128" width="60" height="60" alt="Anathema" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><b>A</b></span><span class="sname">Anathema</span></th><th class="ship" scope="col"><span class="pic t2" title="Tech II"><img src="https://images.evetech.net/types/11182/render?size=128" width="60" height="60" alt="Cheetah" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><b>C</b></span><span class="sname">Cheetah</span></th><th class="ship" scope="col"><span class="pic fac" title="Faction"><img src="https://images.evetech.net/types/72913/render?size=128" width="60" height="60" alt="Imicus Navy Issue" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><b>I</b></span><span class="sname">Imicus Navy Issue</span></th></tr></thead>
+      <tbody class="grp" id="s0">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s0"><span class="car" aria-hidden="true">▾</span>Worth</button></th></tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-coin" aria-hidden="true"><use href="#i-coin"/></svg><span>Estimated Price</span></th>
+<td class="v ">19,414,000 ISK</td>
+<td class="v b" title="Best of the four">21,029,725 ISK</td>
+<td class="v ">20,562,988 ISK</td>
+<td class="v w" title="Lowest of the four">8,844,302 ISK</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-ring" aria-hidden="true"><use href="#i-ring"/></svg><span>Tech Level</span></th>
+<td class="v b" title="Best of the four">Level 2</td>
+<td class="v b" title="Best of the four">Level 2</td>
+<td class="v b" title="Best of the four">Level 2</td>
+<td class="v ">Level 1</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-ring" aria-hidden="true"><use href="#i-ring"/></svg><span>Meta Level</span></th>
+<td class="v b" title="Best of the four">Level 5</td>
+<td class="v b" title="Best of the four">Level 5</td>
+<td class="v b" title="Best of the four">Level 5</td>
+<td class="v d">Level 0</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s1">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s1"><span class="car" aria-hidden="true">▾</span>Requirements</button></th></tr>
+<tr class="row" data-same="1" data-hack="1">
+<th scope="row"><svg class="ico ic-book" aria-hidden="true"><use href="#i-book"/></svg><span>Primary Skill required</span></th>
+<td class="v b" title="Best of the four">✓</td>
+<td class="v b" title="Best of the four">✓</td>
+<td class="v b" title="Best of the four">✓</td>
+<td class="v b" title="Best of the four">✓</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-book" aria-hidden="true"><use href="#i-book"/></svg><span>Secondary Skill required</span></th>
+<td class="v b" title="Best of the four">✓</td>
+<td class="v b" title="Best of the four">✓</td>
+<td class="v b" title="Best of the four">✓</td>
+<td class="v d">–</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s2">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s2"><span class="car" aria-hidden="true">▾</span>Modifiers</button></th></tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-atom" aria-hidden="true"><use href="#i-atom"/></svg><span>Capacitor Need Multiplier</span></th>
+<td class="v d">–</td>
+<td class="v d">–</td>
+<td class="v d">–</td>
+<td class="v ">0.40 %</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-atom" aria-hidden="true"><use href="#i-atom"/></svg><span>Analyzer Virus Strength Bonus</span></th>
+<td class="v b" title="Best of the four">10</td>
+<td class="v b" title="Best of the four">10</td>
+<td class="v b" title="Best of the four">10</td>
+<td class="v ">5</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-cloak" aria-hidden="true"><use href="#i-cloak"/></svg><span>Cloak Reactivation Delay</span></th>
+<td class="v ">5s</td>
+<td class="v ">5s</td>
+<td class="v ">5s</td>
+<td class="v d">–</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s3">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s3"><span class="car" aria-hidden="true">▾</span>Structure</button></th></tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-cube" aria-hidden="true"><use href="#i-cube"/></svg><span>Structure Hitpoints</span></th>
+<td class="v b" title="Best of the four">809 HP</td>
+<td class="v w" title="Lowest of the four">422 HP</td>
+<td class="v ">528 HP</td>
+<td class="v ">475 HP</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-em" aria-hidden="true"><use href="#i-em"/></svg><span>Structure EM Damage Resistance</span></th>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-thermal" aria-hidden="true"><use href="#i-thermal"/></svg><span>Structure Thermal Damage Resistance</span></th>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-kinetic" aria-hidden="true"><use href="#i-kinetic"/></svg><span>Structure Kinetic Damage Resistance</span></th>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-explosive" aria-hidden="true"><use href="#i-explosive"/></svg><span>Structure Explosive Damage Resistance</span></th>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+<td class="v ">33 %</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s4">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s4"><span class="car" aria-hidden="true">▾</span>Armor</button></th></tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-armor" aria-hidden="true"><use href="#i-armor"/></svg><span>Armor Hitpoints</span></th>
+<td class="v ">528 HP</td>
+<td class="v ">528 HP</td>
+<td class="v w" title="Lowest of the four">387 HP</td>
+<td class="v b" title="Best of the four">600 HP</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-em" aria-hidden="true"><use href="#i-em"/></svg><span>Armor EM Damage Resistance</span></th>
+<td class="v ">50 %</td>
+<td class="v ">50 %</td>
+<td class="v b" title="Best of the four">70 %</td>
+<td class="v ">50 %</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-thermal" aria-hidden="true"><use href="#i-thermal"/></svg><span>Armor Thermal Damage Resistance</span></th>
+<td class="v ">35 %</td>
+<td class="v ">35 %</td>
+<td class="v ">35 %</td>
+<td class="v ">35 %</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-kinetic" aria-hidden="true"><use href="#i-kinetic"/></svg><span>Armor Kinetic Damage Resistance</span></th>
+<td class="v b" title="Best of the four">45 %</td>
+<td class="v w" title="Lowest of the four">25 %</td>
+<td class="v w" title="Lowest of the four">25 %</td>
+<td class="v ">35 %</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-explosive" aria-hidden="true"><use href="#i-explosive"/></svg><span>Armor Explosive Damage Resistance</span></th>
+<td class="v ">10 %</td>
+<td class="v b" title="Best of the four">30 %</td>
+<td class="v ">10 %</td>
+<td class="v ">10 %</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s5">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s5"><span class="car" aria-hidden="true">▾</span>Shield</button></th></tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-shield" aria-hidden="true"><use href="#i-shield"/></svg><span>Shield Capacity</span></th>
+<td class="v w" title="Lowest of the four">281 HP</td>
+<td class="v ">422 HP</td>
+<td class="v w" title="Lowest of the four">281 HP</td>
+<td class="v b" title="Best of the four">475 HP</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-hourglass" aria-hidden="true"><use href="#i-hourglass"/></svg><span>Shield recharge time</span></th>
+<td class="v ">10m 25s</td>
+<td class="v ">10m 25s</td>
+<td class="v ">10m 25s</td>
+<td class="v ">10m 25s</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-em" aria-hidden="true"><use href="#i-em"/></svg><span>Shield EM Damage Resistance</span></th>
+<td class="v d">–</td>
+<td class="v d">–</td>
+<td class="v ">10 %</td>
+<td class="v d">–</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-thermal" aria-hidden="true"><use href="#i-thermal"/></svg><span>Shield Thermal Damage Resistance</span></th>
+<td class="v ">20 %</td>
+<td class="v ">20 %</td>
+<td class="v ">20 %</td>
+<td class="v ">20 %</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-kinetic" aria-hidden="true"><use href="#i-kinetic"/></svg><span>Shield Kinetic Damage Resistance</span></th>
+<td class="v b" title="Best of the four">50 %</td>
+<td class="v ">40 %</td>
+<td class="v ">40 %</td>
+<td class="v ">40 %</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-explosive" aria-hidden="true"><use href="#i-explosive"/></svg><span>Shield Explosive Damage Resistance</span></th>
+<td class="v ">50 %</td>
+<td class="v b" title="Best of the four">60 %</td>
+<td class="v ">50 %</td>
+<td class="v ">50 %</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s6">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s6"><span class="car" aria-hidden="true">▾</span>Electronic Resistances</button></th></tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-target" aria-hidden="true"><use href="#i-target"/></svg><span>Signature Radius</span></th>
+<td class="v w" title="Lowest of the four">49 m</td>
+<td class="v ">47 m</td>
+<td class="v ">46 m</td>
+<td class="v b" title="Best of the four">41 m</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-radar" aria-hidden="true"><use href="#i-radar"/></svg><span>RADAR Sensor Strength</span></th>
+<td class="v d">–</td>
+<td class="v ">22 points</td>
+<td class="v d">–</td>
+<td class="v d">–</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-radar" aria-hidden="true"><use href="#i-radar"/></svg><span>Magnetometric Sensor Strength</span></th>
+<td class="v b" title="Best of the four">22 points</td>
+<td class="v d">–</td>
+<td class="v d">–</td>
+<td class="v ">12 points</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-radar" aria-hidden="true"><use href="#i-radar"/></svg><span>Ladar Sensor Strength</span></th>
+<td class="v d">–</td>
+<td class="v d">–</td>
+<td class="v ">20 points</td>
+<td class="v d">–</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s7">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s7"><span class="car" aria-hidden="true">▾</span>Target Acquisition</button></th></tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-range" aria-hidden="true"><use href="#i-range"/></svg><span>Maximum Targeting Range</span></th>
+<td class="v b" title="Best of the four">47.50 km</td>
+<td class="v ">42.50 km</td>
+<td class="v ">37.50 km</td>
+<td class="v w" title="Lowest of the four">35.00 km</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-crosshair" aria-hidden="true"><use href="#i-crosshair"/></svg><span>Maximum Locked Targets</span></th>
+<td class="v b" title="Best of the four">6</td>
+<td class="v b" title="Best of the four">6</td>
+<td class="v b" title="Best of the four">6</td>
+<td class="v w" title="Lowest of the four">5</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-scan" aria-hidden="true"><use href="#i-scan"/></svg><span>Scan Resolution</span></th>
+<td class="v w" title="Lowest of the four">390 mm</td>
+<td class="v ">435 mm</td>
+<td class="v b" title="Best of the four">450 mm</td>
+<td class="v b" title="Best of the four">450 mm</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s8">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s8"><span class="car" aria-hidden="true">▾</span>Drones</button></th></tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-drone" aria-hidden="true"><use href="#i-drone"/></svg><span>Drone Capacity</span></th>
+<td class="v ">5 m3</td>
+<td class="v d">–</td>
+<td class="v d">–</td>
+<td class="v b" title="Best of the four">50 m3</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-drone" aria-hidden="true"><use href="#i-drone"/></svg><span>Drone Bandwidth</span></th>
+<td class="v ">5 Mbit/sec</td>
+<td class="v d">–</td>
+<td class="v d">–</td>
+<td class="v b" title="Best of the four">20 Mbit/sec</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s9">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s9"><span class="car" aria-hidden="true">▾</span>Flight</button></th></tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-chevrons" aria-hidden="true"><use href="#i-chevrons"/></svg><span>Maximum Velocity</span></th>
+<td class="v ">330 m/sec</td>
+<td class="v w" title="Lowest of the four">282 m/sec</td>
+<td class="v b" title="Best of the four">381 m/sec</td>
+<td class="v ">345 m/sec</td>
+</tr>
+<tr class="row" data-same="1" data-hack="1">
+<th scope="row"><svg class="ico ic-chevrons" aria-hidden="true"><use href="#i-chevrons"/></svg><span>Ship Warp Speed</span></th>
+<td class="v ">5.0 AU/s</td>
+<td class="v ">5.0 AU/s</td>
+<td class="v ">5.0 AU/s</td>
+<td class="v ">5.0 AU/s</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-chevrons" aria-hidden="true"><use href="#i-chevrons"/></svg><span>Inertia Modifier</span></th>
+<td class="v ">4.142 x</td>
+<td class="v w" title="Lowest of the four">4.89 x</td>
+<td class="v b" title="Best of the four">3.77 x</td>
+<td class="v ">4.15 x</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-weight" aria-hidden="true"><use href="#i-weight"/></svg><span>Mass</span></th>
+<td class="v ">1,271,000 kg</td>
+<td class="v ">1,147,000 kg</td>
+<td class="v b" title="Best of the four">1,430,000 kg</td>
+<td class="v w" title="Lowest of the four">997,000 kg</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s10">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s10"><span class="car" aria-hidden="true">▾</span>Capacitor</button></th></tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-battery" aria-hidden="true"><use href="#i-battery"/></svg><span>Capacitor Capacity</span></th>
+<td class="v ">218.75 GJ</td>
+<td class="v ">250.0 GJ</td>
+<td class="v w" title="Lowest of the four">187.5 GJ</td>
+<td class="v b" title="Best of the four">400.0 GJ</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-hourglass" aria-hidden="true"><use href="#i-hourglass"/></svg><span>Capacitor Recharge time</span></th>
+<td class="v b" title="Best of the four">3m 7s</td>
+<td class="v b" title="Best of the four">3m 7s</td>
+<td class="v b" title="Best of the four">3m 7s</td>
+<td class="v ">3m 20s</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s11">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s11"><span class="car" aria-hidden="true">▾</span>Fitting</button></th></tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-chip" aria-hidden="true"><use href="#i-chip"/></svg><span>CPU Output</span></th>
+<td class="v b" title="Best of the four">290.0 tf</td>
+<td class="v ">280.0 tf</td>
+<td class="v ">275.0 tf</td>
+<td class="v w" title="Lowest of the four">180.0 tf</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-bolt" aria-hidden="true"><use href="#i-bolt"/></svg><span>Powergrid Output</span></th>
+<td class="v ">20.0 MW</td>
+<td class="v ">20.0 MW</td>
+<td class="v w" title="Lowest of the four">15.0 MW</td>
+<td class="v ">39.0 MW</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-ring" aria-hidden="true"><use href="#i-ring"/></svg><span>Calibration</span></th>
+<td class="v ">400 points</td>
+<td class="v ">400 points</td>
+<td class="v ">400 points</td>
+<td class="v ">400 points</td>
+</tr>
+<tr class="row" data-same="1" data-hack="1">
+<th scope="row"><svg class="ico ic-slotH" aria-hidden="true"><use href="#i-slotH"/></svg><span>High Slots</span></th>
+<td class="v ">3</td>
+<td class="v ">3</td>
+<td class="v ">3</td>
+<td class="v ">3</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-slotM" aria-hidden="true"><use href="#i-slotM"/></svg><span>Medium Slots</span></th>
+<td class="v b" title="Best of the four">5</td>
+<td class="v ">4</td>
+<td class="v ">4</td>
+<td class="v ">4</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-slotL" aria-hidden="true"><use href="#i-slotL"/></svg><span>Low Slots</span></th>
+<td class="v ">3</td>
+<td class="v b" title="Best of the four">4</td>
+<td class="v b" title="Best of the four">4</td>
+<td class="v b" title="Best of the four">4</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-turret" aria-hidden="true"><use href="#i-turret"/></svg><span>Turret Hardpoints</span></th>
+<td class="v ">2 hardpoints</td>
+<td class="v ">2 hardpoints</td>
+<td class="v ">2 hardpoints</td>
+<td class="v ">2 hardpoints</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-launcher" aria-hidden="true"><use href="#i-launcher"/></svg><span>Launcher Hardpoints</span></th>
+<td class="v d">–</td>
+<td class="v b" title="Best of the four">2 hardpoints</td>
+<td class="v ">1 hardpoints</td>
+<td class="v d">–</td>
+</tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-rig" aria-hidden="true"><use href="#i-rig"/></svg><span>Rig Slots</span></th>
+<td class="v ">2</td>
+<td class="v ">2</td>
+<td class="v ">2</td>
+<td class="v b" title="Best of the four">3</td>
+</tr>
+<tr class="row" data-same="1" data-hack="0">
+<th scope="row"><svg class="ico ic-ring" aria-hidden="true"><use href="#i-ring"/></svg><span>Rig Size</span></th>
+<td class="v ">Small</td>
+<td class="v ">Small</td>
+<td class="v ">Small</td>
+<td class="v ">Small</td>
+</tr>
+</tbody>
+<tbody class="grp" id="s12">
+<tr class="sec"><th colspan="5" scope="colgroup"><button type="button" aria-expanded="true" aria-controls="s12"><span class="car" aria-hidden="true">▾</span>Inventory</button></th></tr>
+<tr class="row" data-same="0" data-hack="1">
+<th scope="row"><svg class="ico ic-box" aria-hidden="true"><use href="#i-box"/></svg><span>Capacity</span></th>
+<td class="v w" title="Lowest of the four">175 m3</td>
+<td class="v ">190 m3</td>
+<td class="v ">200 m3</td>
+<td class="v b" title="Best of the four">400 m3</td>
+</tr>
+<tr class="row" data-same="0" data-hack="0">
+<th scope="row"><svg class="ico ic-cube" aria-hidden="true"><use href="#i-cube"/></svg><span>Volume</span></th>
+<td class="v ">23000 m³</td>
+<td class="v b" title="Best of the four">28100 m³</td>
+<td class="v w" title="Lowest of the four">17400 m³</td>
+<td class="v ">21500 m³</td>
+</tr>
+</tbody>
+    </table>
+  </div>
+
+  <h2>Hacking scorecard</h2>
+  <p class="meta" style="margin-bottom:10px">Raw HP and align times are worked out from the table above (align = 1.386 × inertia × mass ÷ 1,000,000), so they are base figures before skills and modules.</p>
+  <div class="tablewrap"><table class="score"><thead><tr><th scope="col">What matters</th><th scope="col">Best</th><th scope="col">Notes</th></tr></thead><tbody>
+<tr><th scope="row">Virus strength bonus (what the hacking minigame actually uses)</th><td class="win">Helios, Anathema, Cheetah (tie)</td><td>+10 each. Imicus Navy Issue is only +5.</td></tr>
+<tr><th scope="row">Covert Ops cloak and 5s cloak reactivation</th><td class="win">Helios, Anathema, Cheetah</td><td>The Imicus Navy Issue is a standard Tech I faction frigate and is not flagged for the covert cloak, so it can't warp cloaked.</td></tr>
+<tr><th scope="row">CPU headroom</th><td class="win">Helios (290 tf)</td><td>Most room for analyzer, covert cloak and probe launcher, plus rigs. Imicus Navy Issue is lowest at 180 tf.</td></tr>
+<tr><th scope="row">Raw HP (structure + armor + shield)</th><td class="win">Helios (1,618)</td><td>Helios 1,618 &gt; Imicus Navy Issue 1,550 &gt; Anathema 1,372 &gt; Cheetah 1,196</td></tr>
+<tr><th scope="row">Base align time (approx.)</th><td class="win">Imicus Navy Issue (5.7s)</td><td>Imicus Navy Issue 5.7s &lt; Helios 7.3s &lt; Cheetah 7.5s &lt; Anathema 7.8s. Cheetah has the best top speed (381 m/s).</td></tr>
+<tr><th scope="row">Mid slots</th><td class="win">Helios (5)</td><td>Room for a prop mod plus a Warp Core Stabilizer or similar.</td></tr>
+<tr><th scope="row">Cargo</th><td class="win">Imicus Navy Issue (400 m3)</td><td>Covert ops sit at 175 to 200 m3.</td></tr>
+<tr><th scope="row">Price</th><td class="win">Imicus Navy Issue (~8.8M ISK)</td><td>The three covert ops are about 19 to 21M ISK.</td></tr>
+</tbody></table></div>
+
+  <h2>Which to pick</h2>
+  <ul class="tips">
+    <li><b>Helios</b> is the all-round hacker: top CPU, the toughest covert ops hull and a spare mid slot for a prop mod and a Warp Core Stabilizer.</li>
+    <li><b>Cheetah</b> if escape speed matters more than staying power: best top speed, inertia and scan resolution, but the weakest tank and lowest powergrid (15 MW).</li>
+    <li><b>Anathema</b> is a fine alternative with four lows for align mods, but it is the slowest and has the least structure.</li>
+    <li><b>Imicus Navy Issue</b> is the cheap hauler: 400 m3 cargo, drones and a third rig slot. It is the weakest hacker here (+5 bonus, no covert cloak) so keep it for quiet space.</li>
+  </ul>
+
+  <h2>Other suggestions</h2>
+  <ul class="tips">
+    <li><b>Add the Buzzard to the comparison.</b> EVE University lists it as the strongest pure scanner/hacker thanks to its 5 mid / 3 low layout and scan deviation bonus. It's the one covert ops hull missing from this sheet.</li>
+    <li><b>Train Covert Ops.</b> Each level cuts the CPU cost of the Covert Ops cloak by 20%, which matters most on the tight-CPU hulls.</li>
+    <li><b>Check the hacking rigs.</b> Rigs such as the Memetic Algorithm Bank (data) and Emission Scope Sharpener (relic) raise virus strength. Compare their numbers in the fitting window before buying.</li>
+    <li><b>Compare with skills applied.</b> Re-run this comparison with your own skills loaded, since align time, cloak CPU and hacking strength all shift with training.</li>
+    <li><b>Next page idea:</b> add ready-to-paste hacking fits (a J-Space-safe version and a quiet-space version) for the Helios and Cheetah.</li>
+  </ul>
+
+  <div class="src">
+    <h2>Sources</h2>
+    <ul>
+      <li><a href="https://wiki.eveuniversity.org/Imicus_Navy_Issue">EVE University: Imicus Navy Issue</a></li>
+      <li><a href="https://wiki.eveuniversity.org/Covert_Ops">EVE University: Covert Ops</a></li>
+      <li><a href="https://everef.net/types/72913">EVE Ref: Imicus Navy Issue</a></li>
+      <li><a href="https://everef.net/types/11172">EVE Ref: Helios</a></li>
+    </ul>
+  </div>
+
+  <footer>Ship images are served live from CCP's image server. EVE Online and the EVE logo are the registered trademarks of CCP hf. This is a fan-made guide.</footer>
+</div>
+<script>
+(function(){
+  var t=document.getElementById('cmp'), wrap=t.parentNode;
+  function flag(id,cls){var el=document.getElementById(id);function f(){wrap.classList.toggle(cls,el.checked)}el.addEventListener('change',f);f()}
+  flag('opt-hl','hl');flag('opt-diff','diff-only');flag('opt-hack','hack-only');
+  t.addEventListener('click',function(e){
+    var b=e.target.closest('tr.sec button');if(!b)return;
+    var g=b.closest('tbody');var c=g.classList.toggle('collapsed');b.setAttribute('aria-expanded',String(!c));
+  });
+})();
+</script>
+</body>
+</html>
