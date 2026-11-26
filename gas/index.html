@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gas Huffer's Chart</title>
+<title>Gas Huffer&#39;s Chart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -147,7 +147,7 @@ footer a { color: var(--accent); }
   <header>
     <h1>Gas Huffer's Chart</h1>
     <p class="lede">Nine fullerite reservoirs in J-Space: what gas is in each, what it sells for, what it reacts into, and which Sleepers turn up.</p>
-    <p class="meta">Site data from the EVE University Wiki. Prices from a Fuzzwork snapshot of The Forge with no date on it, so recheck before you sail. Checked 21 Nov 2026.</p>
+    <p class="meta">Site data from the EVE University Wiki and the Karr's Modified Rykki's Guide 1.5 sheet, which its maintainer last refreshed on 26 Nov 2026, cross-checked against PhobiaCide's V1.2.3 sheet. Prices are Karr's sheet averages. Checked 26 Nov 2026.</p>
   </header>
 
   <section class="controls" aria-label="Filters">
@@ -193,14 +193,17 @@ footer a { color: var(--accent); }
   <footer>
     <h2>How to read this</h2>
     <ul>
-      <li><strong>Site value</strong> is total gas volume times the snapshot ISK per m³. It is the whole cloud, not what you can carry out.</li>
+      <li><strong>Site value</strong> is total gas volume times the Karr's sheet price per m³. It is the whole cloud, not what you can carry out.</li>
       <li><strong>Haul for your stay</strong> takes the priciest gas first at your ship's rate and stops at your hold size or the gas in the site. Venture and Prospect run about 9,600 m³ per hour with T2 scoops, which matches the wiki's clear times. The Pioneer, Pioneer Consortium Issue and Outrider rates are my estimates: the wiki lists no gas yield bonus for them, and no gas figures at all for the Outrider. Confirm in the in-game ship info.</li>
       <li>Sleepers arrive about 15 to 20 minutes after you land. Past 15 minutes on the slider, plan to be gone.</li>
       <li>Each reaction takes 100 units of each fullerite, 5 fuel blocks and one mineral, and returns about 40% of the input volume as hybrid polymer. Polymers then go into hybrid tech components for Tech 3 hulls and subsystems. The wiki does not say which polymer feeds which component.</li>
       <li>The wiki's text lists C540 as the second input for C3-FTM Acid, but its icon is labelled C320-540. Check in game before you buy.</li>
+      <li><strong>Prices</strong> are the average prices on the Karr's sheet, divided by each gas's unit volume. PhobiaCide's sheet prices run a few percent either way. Both move daily, so recheck before you sail.</li>
+      <li><strong>Alpha, Sleeper EHP and blue loot per EHP</strong> come from the Karr's sheet. Alpha is the biggest single volley. Blue loot per EHP is the blue loot divided by the Sleepers' total EHP.</li>
+      <li>The wiki and the Karr's sheet agree on gas amounts at all nine sites. PhobiaCide's sheet agrees at eight and doubles Barren Perimeter. Its change log lists a 100% fullerite increase in November 2020 and no data change since 2023, while Karr's log shows updates through October 2026. Nothing here is confirmed against today's game.</li>
       <li>Sleeper stats are as listed on each site page, usually Wave 1 only. The wiki's wormhole sites page is flagged as needing a refresh for the 2021 mining field changes.</li>
     </ul>
-    <p>Sources: <a href="https://wiki.eveuniversity.org/Gas_cloud_harvesting">Gas cloud harvesting</a>, <a href="https://wiki.eveuniversity.org/Wormhole_sites">Wormhole sites</a>, <a href="https://wiki.eveuniversity.org/Reactions">Reactions</a>, <a href="https://wiki.eveuniversity.org/Tech_3_Production">Tech 3 Production</a>, <a href="https://www.fuzzwork.co.uk/ore/gas.html?region=10000002">Fuzzwork gas prices</a>, <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSaCHnBRDw8Ki6nuamMzQv3InN978Zh7F6RcwlYdJHnlQkDrrdz5zrG3Of_8eoyxeqJimMHt9-7GjLn/pubhtml">Karr's Modified Rykki's Guide 1.5 sheet</a>, <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSskkG0Lr8YTU1Qz1XrXGlIpqnHZsJePh9ipr1e2qUsmfVu8tzn0NNzAOeM7_omWbHxzWtQ5gO7V1SH/pubhtml">PhobiaCide's Rykki's Guide V1.2.3 sheet</a>, and each reservoir's own wiki page.</p>
+    <p>Sources: <a href="https://wiki.eveuniversity.org/Gas_cloud_harvesting">Gas cloud harvesting</a>, <a href="https://wiki.eveuniversity.org/Wormhole_sites">Wormhole sites</a>, <a href="https://wiki.eveuniversity.org/Reactions">Reactions</a>, <a href="https://wiki.eveuniversity.org/Tech_3_Production">Tech 3 Production</a>, <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSskkG0Lr8YTU1Qz1XrXGlIpqnHZsJePh9ipr1e2qUsmfVu8tzn0NNzAOeM7_omWbHxzWtQ5gO7V1SH/pubhtml">PhobiaCide's Rykki's Guide V1.2.3 sheet</a>, <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSaCHnBRDw8Ki6nuamMzQv3InN978Zh7F6RcwlYdJHnlQkDrrdz5zrG3Of_8eoyxeqJimMHt9-7GjLn/pubhtml">Karr's Modified Rykki's Guide 1.5 sheet</a>, and each reservoir's own wiki page.</p>
   </footer>
 </div>
 
@@ -222,15 +225,15 @@ footer a { color: var(--accent); }
   ];
 
   var GAS = {
-    C28:  { vol: 2,  ppm: 5698.87 },
-    C32:  { vol: 5,  ppm: 3959.55 },
-    C50:  { vol: 1,  ppm: 7627.77 },
-    C60:  { vol: 1,  ppm: 6673.91 },
-    C70:  { vol: 1,  ppm: 10150.16 },
-    C72:  { vol: 2,  ppm: 3247.47 },
-    C84:  { vol: 2,  ppm: 4705.42 },
-    C320: { vol: 5,  ppm: 6856.00 },
-    C540: { vol: 10, ppm: 5201.61 }
+    C28:  { vol: 2,  ppm: 6238 },
+    C32:  { vol: 5,  ppm: 4160 },
+    C50:  { vol: 1,  ppm: 6202 },
+    C60:  { vol: 1,  ppm: 5173 },
+    C70:  { vol: 1,  ppm: 8955 },
+    C72:  { vol: 2,  ppm: 3180 },
+    C84:  { vol: 2,  ppm: 4394 },
+    C320: { vol: 5,  ppm: 7082 },
+    C540: { vol: 10, ppm: 5329 }
   };
   var GAS_ORDER = ["C28", "C32", "C50", "C60", "C70", "C72", "C84", "C320", "C540"];
 
@@ -261,52 +264,65 @@ footer a { color: var(--accent); }
       gas: [{ g: "C60", m3: 6000, h: 0.64 }, { g: "C50", m3: 12000, h: 1.26 }],
       sleepers: [S(3, "Emergent Patroller", "Frigate", "None listed", 3000, 35, 1750, "15 km"),
                  S(2, "Emergent Watchman", "Frigate", "Neut", 2000, 35, 1925, "15 km")],
-      neut: 6, dps: 82, loot: 2.0, notes: ["Wave 1 only is listed on the wiki."] },
+      neut: 6, dps: 74, dpsWiki: 82, loot: 2.0,
+      notes: ["The wiki and the Karr's sheet both show 18,000 m³ here. PhobiaCide's older sheet shows double that (36,000 m³). Two sources against one, so 18,000 m³ is used. Confirm in game."] },
     { id: "token", name: "Token Perimeter Reservoir", tier: "perimeter",
       gas: [{ g: "C70", m3: 6000, h: 0.64 }, { g: "C60", m3: 12000, h: 1.26 }],
       sleepers: [S(2, "Emergent Escort", "Frigate", "Web", 1300, 35, 2100, "15 km"),
                  S(1, "Awakened Watchman", "Cruiser", "Neut", 8750, 150, 1400, "53 km")],
-      neut: 6, dps: 78, loot: 1.8, notes: ["The wiki calls this low-end gas and says to skip it unless you plan to react it."] },
+      neut: 6, dps: 76, dpsWiki: 78, loot: 1.8, notes: ["The wiki calls this low-end gas and says to skip it unless you plan to react it."] },
     { id: "minor", name: "Minor Perimeter Reservoir", tier: "perimeter",
       gas: [{ g: "C72", m3: 12000, h: 1.26 }, { g: "C70", m3: 12000, h: 1.26 }],
       sleepers: [S(2, "Awakened Patroller", "Cruiser", "None listed", 19167, 150, 1190, "30 km")],
-      neut: null, dps: 80, loot: 2.0, notes: ["No neutralizers are listed. EHP is shown as the wiki gives it."] },
+      neut: null, dps: 84, dpsWiki: 80, loot: 2.0, notes: ["No neutralizers are listed. EHP is shown as the wiki gives it."] },
     { id: "ordinary", name: "Ordinary Perimeter Reservoir", tier: "perimeter",
       gas: [{ g: "C84", m3: 12000, h: 1.26 }, { g: "C72", m3: 24000, h: 2.5 }],
       sleepers: [S(3, "Emergent Patroller", "Frigate", "None listed", 3000, 35, 1750, "15 km"),
                  S(3, "Emergent Watchman", "Frigate", "Neut", 2000, 35, 1925, "15 km")],
-      neut: 9, dps: 96, loot: 2.4,
-      notes: ["Listed as two waves of Sleeper frigates, 3 of each type.",
+      neut: 9, dps: 86, dpsWiki: 96, loot: 2.4,
+      notes: ["Listed as two waves of Sleeper frigates, 3 of each type. PhobiaCide's older sheet shows blue loot of 1.2M, DPS 49 and no neuts here. Karr's update log records the Sentry Tower replacement in April 2026 and the missing blue loot being added in August 2026, so its 2.4M and 86 DPS stand.",
               "This site used to have 5 Sentry Towers with no spawn delay. The wiki says Sleepers replaced them in patch 2026-03-18.1, so older advice to avoid it may be out of date."] },
     { id: "sizable", name: "Sizable Perimeter Reservoir", tier: "perimeter",
       gas: [{ g: "C50", m3: 6000, h: 0.64 }, { g: "C84", m3: 24000, h: 2.5 }],
       sleepers: [S(3, "Emergent Patroller", "Frigate", "None listed", 3000, 35, 1750, "15 km"),
                  S(3, "Emergent Watchman", "Frigate", "Neut", 2000, 35, 1925, "15 km")],
-      neut: 9, dps: 96, loot: 2.4, notes: ["Wave 1 only is listed. The wiki page title spells it Sizeable."] },
+      neut: 9, dps: 86, dpsWiki: 96, loot: 2.4, notes: ["Wave 1 only is listed. The wiki page title spells it Sizeable."] },
     { id: "bountiful", name: "Bountiful Frontier Reservoir", tier: "frontier",
       gas: [{ g: "C32", m3: 20000, h: 2.08 }, { g: "C28", m3: 40000, h: 4.16 }],
-      sleepers: [S(3, "Emergent Defender", "Frigate", "Web", 4200, 35, 2160, "15 km"),
-                 S(2, "Awakened Defender", "Cruiser", "None listed", 26833, 150, 1480, "45 km")],
-      neut: null, dps: 368, loot: 20.0,
-      notes: ["Waves 1 and 2 are identical. Alpha strike 3,212.", "Lots of webs here, so you cannot rely on speed to tank."] },
+      sleepers: [S(6, "Emergent Defender", "Frigate", "Web", 4200, 35, 2160, "15 km"),
+                 S(4, "Awakened Defender", "Cruiser", "None listed", 26833, 150, 1480, "45 km")],
+      neut: null, dps: 373, dpsWiki: 368, loot: 20.0,
+      notes: ["Waves 1 and 2 are identical, 3 Emergent and 2 Awakened Defenders each. The counts above are both waves together, as the sheet shows them, and the total DPS covers both.", "Lots of webs here, so you cannot rely on speed to tank."] },
     { id: "vast", name: "Vast Frontier Reservoir", tier: "frontier",
       gas: [{ g: "C28", m3: 8000, h: 0.84 }, { g: "C32", m3: 100000, h: 10.42 }],
       sleepers: [S(4, "Awakened Defender", "Cruiser", "None listed", 26833, 150, 1480, "45 km"),
                  S(4, "Awakened Upholder", "Cruiser", "Web, neut", 12250, 150, 1728, "79 km")],
-      neut: 24, dps: 392, loot: 23.2,
+      neut: 24, dps: 410, dpsWiki: 392, loot: 23.2,
       notes: ["A second wave may appear about 10 minutes after the first. The wiki does not list what it holds."] },
     { id: "instrumental", name: "Instrumental Core Reservoir", tier: "core",
       gas: [{ g: "C320", m3: 120000, h: 12.5 }, { g: "C540", m3: 20000, h: 2.08 }],
-      sleepers: [S(4, "Sleepless Sentinel", "Battleship", "Web, warp disruptor, neut", 147714, 400, 1125, "75 km")],
-      neut: 72, dps: 1864, loot: 63.6,
-      notes: ["The Sentinels web and point you. Be warped out before they land.", "EHP is shown as the wiki gives it, without saying per ship or total."] },
+      sleepers: [S(4, "Sleepless Sentinel", "Battleship", "Scram, web, neut", 147714, 400, 1125, "75 km")],
+      neut: 72, dps: 1859, dpsWiki: 1864, loot: 63.6,
+      notes: ["The Sentinels point and web you. The sheet lists a 24 km scram and a 30 km web; the wiki calls the point a disruptor. Be warped out before they land.", "EHP is shown as the wiki gives it, without saying per ship or total."] },
     { id: "vital", name: "Vital Core Reservoir", tier: "core",
       gas: [{ g: "C320", m3: 10000, h: 1.06 }, { g: "C540", m3: 240000, h: 25 }],
       sleepers: [S(4, "Emergent Keeper", "Frigate", "Neut, remote rep", 4400, 35, 2880, "15 km"),
                  S(4, "Sleepless Keeper", "Battleship", "Neut", 88629, 400, 945, "300 km")],
-      neut: 60, dps: 2360, loot: 74.8,
+      neut: 60, dps: 2348, dpsWiki: 2360, loot: 74.8,
       notes: ["The wiki says the Sleeper spawn is delayed about 15 minutes after the site is activated."] }
   ];
+
+  /* Alpha (biggest volley), total Sleeper EHP and blue loot per EHP, from the Karr's sheet */
+  var KARR = {
+    barren: { a: 535, e: 13000, r: 154 }, token: { a: 591, e: 11350, r: 159 }, minor: { a: 864, e: 38333, r: 52 },
+    ordinary: { a: 630, e: 15000, r: 160 }, sizable: { a: 630, e: 15000, r: 160 }, bountiful: { a: 3385, e: 132533, r: 151 },
+    vast: { a: 3909, e: 156333, r: 148 }, instrumental: { a: 22982, e: 590857, r: 108 }, vital: { a: 15890, e: 372114, r: 201 }
+  };
+  function karrFacts(s) {
+    var k = KARR[s.id];
+    if (!k) return "";
+    return '<p><strong>Alpha:</strong> <span class="mono">' + fmt(k.a) + '</span></p><p><strong>Sleeper EHP:</strong> <span class="mono">' + fmt(k.e) + '</span></p><p><strong>Blue loot per EHP:</strong> <span class="mono">' + k.r + ' ISK</span></p>';
+  }
 
   /* ---------- helpers ---------- */
   function $(id) { return document.getElementById(id); }
@@ -388,9 +404,9 @@ footer a { color: var(--accent); }
         "<h3>What the gas makes</h3>" + reactionsFor(s) +
         "<h3>Sleepers</h3>" +
         '<div class="tbl"><table><thead><tr><th class="n">Count</th><th>Name</th><th>Class</th><th>Role</th><th class="n">EHP</th><th class="n">Sig</th><th class="n">Speed m/s</th><th class="n">Range</th></tr></thead><tbody>' + slRows + "</tbody></table></div>" +
-        '<div class="facts"><p><strong>Total DPS:</strong> <span class="mono">' + fmt(s.dps) + "</span></p>" +
+        '<div class="facts"><p><strong>Total DPS:</strong> <span class="mono">' + fmt(s.dps) + (s.dpsWiki ? " per the sheets, " + fmt(s.dpsWiki) + " per the wiki" : "") + "</span></p>" +
           "<p><strong>Neut:</strong> <span class=\"mono\">" + (s.neut ? s.neut + " GJ/s" : "not listed") + "</span></p>" +
-          "<p><strong>Blue loot:</strong> <span class=\"mono\">" + s.loot.toFixed(1) + "M ISK</span></p></div>" +
+          "<p><strong>Blue loot:</strong> <span class=\"mono\">" + s.loot.toFixed(1) + "M ISK</span></p>" + karrFacts(s) + "</div>" +
         s.notes.map(function (n) { return '<p class="note">' + esc(n) + "</p>"; }).join("") +
       "</div></details></li>";
   }
