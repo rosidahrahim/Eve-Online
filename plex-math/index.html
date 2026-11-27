@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Eve Costs: Omega, PLEX and Skill Point Math</title>
+<style>
+:root{--bg:#eef1f4;--ink:#14222e;--muted:#55677a;--line:#d2dae2;--accent:#0a6f8c;--duck:#973231;--panel:rgba(255,255,255,.84);--accent-soft:#dcf0f5;--ok:#1d7a46;--ok-soft:#dff3e7;--warn:#9a5a00;--warn-soft:#fbedd0;--bad:#b3261e;--bad-soft:#fbe3e1;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1a24;--ink:#e5edf3;--muted:#93a7b8;--line:#27394a;--accent:#55c4e2;--duck:#c75757;--panel:rgba(20,36,47,.82);--accent-soft:#123a47;--ok:#5fd08c;--ok-soft:#14392a;--warn:#f0b24c;--warn-soft:#3d2f10;--bad:#ff8b82;--bad-soft:#43201e;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.bg{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:75vmax;height:75vmax;max-width:none;opacity:.14;pointer-events:none;z-index:0}
+main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:clamp(2rem,6vw,3rem);line-height:1.05;margin:0 0 8px;color:var(--duck)}
+h2{font-size:1.4rem;margin:0 0 4px;color:var(--accent)}
+h3{font-size:1.05rem;margin:18px 0 6px;color:var(--ink)}
+.back{display:inline-flex;align-items:center;gap:6px;margin:0 0 18px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--accent);font-size:.9rem;font-weight:600;text-decoration:none}
+.back:hover,.back:focus-visible{border-color:var(--accent);outline:none}
+.lede{color:var(--muted);margin:0 0 16px;max-width:66ch}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 10px;max-width:72ch}
+.banner{background:var(--warn-soft);color:var(--warn);border-left:4px solid var(--warn);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 16px;font-size:.95rem}
+nav.jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+nav.jump a{padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--accent);font-size:.88rem;font-weight:600;text-decoration:none}
+nav.jump a:hover,nav.jump a:focus-visible{border-color:var(--accent);outline:none}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px;scroll-margin-top:12px}
+.controls{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:flex-end}
+.controls label{display:flex;flex-direction:column;gap:3px;font-size:.85rem;color:var(--muted)}
+.controls label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:.95rem}
+input[type=number]{width:9em;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer;font:inherit;font-size:.9rem}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:14px}
+.res{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.res.best{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset}
+.res h3{margin:0 0 2px;font-size:.95rem;color:var(--muted);font-weight:600}
+.res .big{font-size:1.6rem;font-weight:700;line-height:1.2}
+.res .per{color:var(--muted);font-size:.9rem}
+.res .combo{margin-top:6px;font-size:.88rem;font-family:var(--mono)}
+.res .tagbest{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--ok-soft);color:var(--ok);font-size:.72rem;font-weight:700;vertical-align:middle}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);white-space:nowrap;position:sticky;top:0;background:var(--panel)}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.x{color:var(--muted);font-size:.85rem;min-width:16em}
+td.nm{white-space:nowrap}
+td.nm small{display:block;color:var(--muted);font-weight:400;font-size:.78rem}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.74rem;font-weight:700;white-space:nowrap}
+.pill.sale{background:var(--ok-soft);color:var(--ok)}
+.pill.none{background:var(--accent-soft);color:var(--accent)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.gone{background:var(--bad-soft);color:var(--bad)}
+.bar{display:block;height:8px;border-radius:99px;background:var(--accent);min-width:2px}
+.note{color:var(--muted);font-size:.88rem;margin:8px 0 0;max-width:80ch}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:10px}
+.chart{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.chart h3{margin:0 0 4px;font-size:.95rem}
+.chart svg{width:100%;height:auto;display:block}
+.chart .ax{fill:var(--muted);font-size:10px}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:2}
+.chart .dt{fill:var(--accent)}
+details{margin-top:12px}
+summary{cursor:pointer;color:var(--accent);font-weight:600}
+footer{margin-top:36px;color:var(--muted);font-size:.9rem}
+footer ul{padding-left:18px;margin:8px 0 0}
+footer li{margin-bottom:5px}
+footer a{color:var(--accent)}
+@media print{.bg,.back,nav.jump,.controls{display:none}body{background:#fff;color:#000}section.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<img class="bg" src="../gas/logo.webp" alt="" aria-hidden="true">
+<main>
+  <a class="back" href="../">&larr; Back to index</a>
+  <h1>What Eve Costs</h1>
+  <p class="lede">Omega, PLEX and skill points priced in cash and in ISK, with the cheapest route worked out for you. Prices are a snapshot of the 19 Nov 2026 tab of a community sheet. Set the ISK prices below to today's market and the ISK figures follow.</p>
+  <p class="banner"><strong>Sale over.</strong> The Omega sale ended Thu 26 Nov 2026 at 23:59 UTC. The cash prices on this page are the sale prices from the 19 Nov snapshot, so check the EVE store for what you will actually pay today. PLEX prices below can be switched between sale and normal.</p>
+
+  <nav class="jump" aria-label="Sections">
+    <a href="#calc">Cheapest route</a><a href="#omega">Omega</a><a href="#plex">PLEX packs</a><a href="#sp">Skill points</a><a href="#packs">Starter packs</a><a href="#market">Extractors &amp; market</a>
+  </nav>
+
+  <section class="card" id="settings">
+    <h2>Your numbers</h2>
+    <p class="sub">These feed every ISK figure and the route calculator. Defaults are the 19 Nov 2026 prices from the sheet, in millions of ISK.</p>
+    <div class="controls">
+      <label>PLEX price (M ISK)<input id="pPlex" type="number" step="0.01" min="0" value="4.929"></label>
+      <label>Skill Extractor (M ISK)<input id="pExt" type="number" step="1" min="0" value="477"></label>
+      <label>Large Skill Injector (M ISK)<input id="pInj" type="number" step="1" min="0" value="722.8"></label>
+      <label class="chk"><input id="optMarkee" type="checkbox"> Buy via Markee Dragon with code <code>wckg</code> (3% off cash)</label>
+      <label class="chk"><input id="optSale" type="checkbox"> Use sale PLEX prices for Omega</label>
+    </div>
+  </section>
+
+  <section class="card" id="calc">
+    <h2>Cheapest way to cover your Omega time</h2>
+    <p class="sub">Pick how many months you want. The calculator finds the cheapest exact combination of Omega packages, for cash, for PLEX, and for buying PLEX packs with cash first.</p>
+    <div class="controls">
+      <label>Months of Omega<input id="months" type="number" min="1" max="120" step="1" value="12"></label>
+    </div>
+    <div class="results" id="results" aria-live="polite"></div>
+    <p class="note" id="calcNote"></p>
+  </section>
+
+  <section class="card" id="omega">
+    <h2>Omega</h2>
+    <p class="sub">Cash prices are the 19 Nov sale snapshot. PLEX prices show both the sale and the normal price where they differ.</p>
+    <div class="tbl"><table id="omegaTbl"></table></div>
+    <h3>Omega + PLEX bundles</h3>
+    <p class="sub">Omega bundled with PLEX. The sheet's own verdict on the 19 Nov snapshot: these were worse than the plain Omega sale.</p>
+    <div class="tbl"><table id="bundleTbl"></table></div>
+    <p class="note">The sheet also notes that buying through Markee Dragon with creator code <code>wckg</code> saves another 3%. Its own Markee column does not match 3% off on the 6, 12 and 24 month rows, so this page works the 3% out itself.</p>
+  </section>
+
+  <section class="card" id="plex">
+    <h2>PLEX packs</h2>
+    <p class="sub">What a PLEX pack costs, how many months of Omega it buys at the PLEX prices you picked, and what that works out to in cash.</p>
+    <div class="tbl"><table id="plexTbl"></table></div>
+    <p class="note">The 80,000 pack is only for buyers who contact CCP directly and ask for a larger than normal pack. Months of Omega assume you spend the PLEX on the best mix of 1, 3, 6, 12 and 24 month packages.</p>
+  </section>
+
+  <section class="card" id="sp">
+    <h2>Skill points</h2>
+    <p class="sub">Every bundle ranked by skill points per dollar or per PLEX. Totals are bought skill points plus the skill points the bundled boosters give over their full run, assuming Biology 5.</p>
+    <div class="chips" role="group" aria-label="Currency">
+      <button class="chip" id="cUsd" aria-pressed="true" type="button">Cash (USD)</button>
+      <button class="chip" id="cPlex" aria-pressed="false" type="button">PLEX</button>
+    </div>
+    <div class="tbl"><table id="spTbl"></table></div>
+    <p class="note">Mastery packs also include Omega days, PLEX, MCT certificates and Skill Extractors that the skill point ranking ignores, so their real value is higher than the ranking shows.</p>
+  </section>
+
+  <section class="card" id="packs">
+    <h2>Starter and career packs</h2>
+    <p class="sub">SP per $ counts bought skill points plus booster skill points. $ per month works the Omega days alone out as a monthly price, so you can see what the rest of the pack costs you.</p>
+    <div class="tbl"><table id="packTbl"></table></div>
+    <details><summary>Retired packs</summary>
+      <div class="tbl" style="margin-top:8px"><table id="goneTbl"></table></div>
+    </details>
+    <h3>Cerebral accelerators</h3>
+    <div class="tbl"><table id="boostTbl"></table></div>
+  </section>
+
+  <section class="card" id="market">
+    <h2>Extractors, injectors and the market</h2>
+    <p class="sub">Buying Skill Extractors with PLEX beats the market when PLEX is cheap against the extractor price. Edit the prices at the top to check today's numbers.</p>
+    <div class="tbl"><table id="extTbl"></table></div>
+    <h3>Price history</h3>
+    <p class="sub">Eleven months of snapshots from the sheet, newest on the right. The spread is what a Large Skill Injector costs over a Skill Extractor.</p>
+    <div class="charts" id="charts"></div>
+    <details><summary>History table</summary>
+      <div class="tbl" style="margin-top:8px"><table id="histTbl"></table></div>
+    </details>
+  </section>
+
+  <footer>
+    <h2>How to read this</h2>
+    <ul>
+      <li><strong>Months for cash</strong> is the cheapest exact mix of 1, 3, 6, 12 and 24 month Omega packages at the cash prices above. With the Markee box ticked each price drops 3%.</li>
+      <li><strong>Buying PLEX with cash first</strong> finds the cheapest mix of PLEX packs that holds enough PLEX for the PLEX route, so it may leave a few spare PLEX.</li>
+      <li><strong>ISK figures</strong> are PLEX count times the PLEX price you set. They are the sell price of PLEX, not a guarantee you can fill the order.</li>
+      <li>The Omega and bundle prices are the sale prices from 19 Nov 2026. The sale ended on 26 Nov, so recheck before you buy.</li>
+      <li>Three starter packs (Frontline Cadet, Empire Guardian, Nexus Reckoning) show a lower skill points per dollar figure in the sheet because it counts only the booster skill points. This page counts the bought skill points too.</li>
+      <li>The sheet labels the 1,500 and 6,000 PLEX skill bundles Undock and Warp. Their skill point totals match the Afterburn and Jump bundles, so they are labelled that way here.</li>
+      <li>The sheet's Skill Extractor "bounceback" columns are left out. They reuse the September price and add nothing to today's decision.</li>
+    </ul>
+    <p>Sources: <a href="https://docs.google.com/spreadsheets/d/1K2CEaO4P3hhAZFMcLy8_E4wtm_QHG8tQlsylVHvANgA/edit?gid=1993726289#gid=1993726289">How much does Eve cost me today! Plex Math sucks</a>, a community sheet by goninzo, Nov 2026 tab, last edited 19 Nov 2026 (all prices and history). <a href="https://secure.eveonline.com/third-party-retailers">EVE third-party retailers</a> (Markee Dragon). Price history appraisal: <a href="https://janice.e-351.com/a/z8hWJ8">Janice</a>.</p>
+  </footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+function fmt(n,d){return n.toLocaleString("en-US",{minimumFractionDigits:d||0,maximumFractionDigits:d===undefined?0:d})}
+function usd(n){return "$"+fmt(n,2)}
+function isk(plex){var b=plex*num("pPlex")/1000;return b>=1?fmt(b,2)+" B":fmt(b*1000,0)+" M"}
+function num(id){var v=parseFloat($(id).value);return isFinite(v)&&v>=0?v:0}
+function pill(t){var c={"sale":"sale","50% off":"sale","no sale":"none","new":"warn","check":"warn","previous":"warn","gone":"gone"}[t.toLowerCase().split(" (")[0]]||"none";return '<span class="pill '+c+'">'+t+'</span>'}
+
+/* ---------- data (Nov 2026 tab, snapshot 2026-11-19) ---------- */
+var OMEGA=[
+ {m:1,usd:15,sale:375,base:500,x:"Ibis Copper Lightning skin, 100k SP, 155k SP in boosters, Glamourex booster, 2 agency support drops"},
+ {m:3,usd:36,sale:960,base:1200,x:"Malediction, Ibis Copper Lightning"},
+ {m:6,usd:63,sale:1785,base:2100,x:"Pioneer, Malediction, Ibis Copper Lightning"},
+ {m:12,usd:108,sale:3600,base:3600,x:"Gnosis, Orthrus, Pioneer, Malediction, Ibis Copper Lightning"},
+ {m:24,usd:198,sale:6600,base:6600,x:"Gaia, Barghest, Gnosis, Orthrus, Pioneer, Malediction, Ibis Copper Lightning"}
+];
+var BUNDLE=[
+ {m:3,usd:48,plex:200,buys:"Less than 1 month (375 PLEX)"},
+ {m:6,usd:84,plex:500,buys:"1 month, 125 PLEX left"},
+ {m:12,usd:144,plex:1000,buys:"3 months, 40 PLEX left"},
+ {m:24,usd:264,plex:1500,buys:"6 months needs 285 more PLEX"}
+];
+var PACKS=[
+ {p:50,usd:2.49},{p:100,usd:5},{p:200,usd:10},{p:500,usd:25},{p:1000,usd:45},{p:1500,usd:65},
+ {p:3000,usd:125},{p:6000,usd:240},{p:12000,usd:420},{p:20000,usd:650},{p:80000,usd:2000,big:true}
+];
+/* SP bundles: n, price, bought SP (k), booster SP (k), tag, extras */
+var SP_USD=[
+ {n:"Genius Cerebral Accelerator",c:5,sp:0,b:622.08,t:"no sale",x:"+12 for 24 hours"},
+ {n:"Undock Boost Bundle",c:8,sp:648,b:622.08,t:"50% off",x:"Genius accelerator"},
+ {n:"Afterburn Boost Bundle",c:24,sp:1944,b:1244.16,t:"50% off",x:"2x Genius accelerator"},
+ {n:"Warp Boost Bundle",c:48,sp:3888,b:1244.16,t:"50% off",x:"2x Genius accelerator"},
+ {n:"Jump Boost Bundle",c:96,sp:7776,b:1244.16,t:"50% off",x:"2x Genius accelerator"},
+ {n:"3 for 2: Undock",c:32,sp:1944,b:1866.24,t:"previous",x:"Previous deal"},
+ {n:"3 for 2: Afterburn",c:96,sp:5832,b:3732.48,t:"previous",x:"Previous deal"},
+ {n:"3 for 2: Warp",c:192,sp:11664,b:3732.48,t:"previous",x:"Previous deal"},
+ {n:"3 for 2: Jump",c:384,sp:23328,b:3732.48,t:"previous",x:"Previous deal"},
+ {n:"Apprentice Bundle",c:7.99,sp:250,b:622.08,t:"no sale",x:"Genius accelerator"},
+ {n:"Novice Bundle",c:14.79,sp:500,b:501.12,t:"no sale",x:"Expert + Standard accelerator"},
+ {n:"Graduate Bundle",c:20.89,sp:750,b:552.96,t:"no sale",x:"2x Specialist accelerator"},
+ {n:"Prodigy Bundle",c:32.89,sp:1250,b:311.04,t:"no sale",x:"2x Advanced accelerator"},
+ {n:"Master Bundle",c:42.99,sp:1750,b:138.24,t:"no sale",x:"2x Standard accelerator"},
+ {n:"Level 1 Mastery Pack",c:10,sp:0,b:622.08,t:"no sale",x:"15 days Omega, Genius accelerator"},
+ {n:"Into Anoikis Pack",c:15,sp:0,b:432,t:"no sale",x:"15 days Omega, Wormhole Pilot Expert System, Expert accelerator, 2 random boosters, 1 SKINR item"},
+ {n:"Insurgent Uprising Pack ($15)",c:15,sp:0,b:432,t:"no sale",x:"15 days Omega, Insurgent Expert System, Expert accelerator, 2 random boosters, 1 SKINR item"},
+ {n:"Insurgent Uprising Pack ($20)",c:20,sp:648,b:622.08,t:"no sale",x:"500 PLEX, Genius accelerator"},
+ {n:"Level 2 Mastery Pack",c:20,sp:250,b:622.08,t:"no sale",x:"100 PLEX, 30 days Omega, Genius accelerator"},
+ {n:"Level 3 Mastery Pack",c:50,sp:750,b:552.96,t:"no sale",x:"500 PLEX, 60 days Omega, 2x Specialist accelerator"},
+ {n:"Level 4 Mastery Pack",c:100,sp:1250,b:311.04,t:"no sale",x:"1,000 PLEX, 90 days Omega, 2x Advanced accelerator, 2 MCT certificates, 2 Skill Extractors"},
+ {n:"Level 5 Mastery Pack",c:250,sp:1750,b:138.24,t:"no sale",x:"3,000 PLEX, 180 days Omega, 2x Standard accelerator, 2 MCT certificates, 10 Skill Extractors"}
+];
+var SP_PLEX=[
+ {n:"Level 1 Mastery Pack",c:300,sp:250,b:622.08,t:"no sale",x:"7 days Omega, Genius accelerator"},
+ {n:"Undock Boost Bundle",c:500,sp:648,b:622.08,t:"no sale",x:"Expert accelerator"},
+ {n:"Level 2 Mastery Pack",c:600,sp:500,b:501.12,t:"no sale",x:"14 days Omega, Expert + Standard accelerator"},
+ {n:"Level 3 Mastery Pack",c:1200,sp:750,b:552.96,t:"no sale",x:"60 days Omega, 2x Specialist accelerator"},
+ {n:"Afterburn Boost Bundle",c:1500,sp:1944,b:1244.16,t:"no sale",x:"2x Genius accelerator"},
+ {n:"Level 4 Mastery Pack",c:2500,sp:1250,b:311.04,t:"no sale",x:"90 days Omega, 2x Advanced accelerator, 2 MCT certificates, 1 Skill Extractor"},
+ {n:"Warp Boost Bundle",c:3000,sp:3888,b:552.96,t:"no sale",x:"2x Genius accelerator (the sheet counts fewer booster SP here than for the cash version)"},
+ {n:"Level 5 Mastery Pack",c:5000,sp:1750,b:1244.16,t:"no sale",x:"180 days Omega, 2x Standard accelerator, 3 MCT certificates, 10 Skill Extractors, 3 body resculpt certificates, 1,000 Hypercores"},
+ {n:"Jump Boost Bundle",c:6000,sp:7776,b:1244.16,t:"no sale",x:"2x Genius accelerator"},
+ {n:"Apprentice Bundle",c:280,sp:250,b:622.08,t:"no sale",x:"Genius accelerator"},
+ {n:"Novice Bundle",c:520,sp:500,b:501.12,t:"no sale",x:"Expert + Standard accelerator"},
+ {n:"Graduate Bundle",c:735,sp:750,b:552.96,t:"no sale",x:"2x Specialist accelerator"},
+ {n:"Prodigy Bundle",c:1154,sp:1250,b:311.04,t:"no sale",x:"2x Advanced accelerator"},
+ {n:"Master Bundle",c:1510,sp:1750,b:138.24,t:"no sale",x:"2x Standard accelerator"}
+];
+var STARTER=[
+ {n:"Starter",c:4.99,d:7,pl:0,sp:0,b:0,t:"no sale",x:"Core Ship Operations Expert System, 2x Basic Glamourex Boosters, skins for Venture, Merlin, Punisher, Rifter, Incursus. One per account."},
+ {n:"Weekend",c:3.75,d:3,pl:50,sp:0,b:0,t:"no sale",x:"Nothing else"},
+ {n:"Explorer Career Pack",c:10.99,d:14,pl:0,sp:0,b:155.52,t:"no sale",x:"2x Space Exploration Expert System, explorer career crate, Advanced accelerator"},
+ {n:"Industrialist Career Pack",c:13.99,d:14,pl:0,sp:0,b:155.52,t:"no sale",x:"2x Mining/Hauler Operations Expert System, industrialist career crate, Mackinaw skin, Advanced accelerator"},
+ {n:"Enforcer Career Pack",c:16.99,d:14,pl:0,sp:0,b:155.52,t:"no sale",x:"2x Core Ship Operations and 2x Enforcer Operations Expert System, 2 agency drops, 2 Basic Glamourex, enforcer career crate, Advanced accelerator"},
+ {n:"Soldier of Fortune Career Pack",c:18.99,d:14,pl:0,sp:0,b:155.52,t:"no sale",x:"2x Faction Warfare Expert System, agency support drop, career crate, Advanced accelerator"},
+ {n:"Frontline Cadet Pack",c:7,d:0,pl:25,sp:150,b:432,t:"check",x:"Faction Warfare Expert System, agency support drop, Expert accelerator, character background"},
+ {n:"Empire Guardian Pack",c:90,d:0,pl:2000,sp:648,b:622.08,t:"check",x:"2 Skill Extractors, MCT, 18 SKINR elements, Dragoon Navy Issue, Algos Navy Issue, Corax Navy Issue, Talwar Fleet Issue skins, Genius accelerator, character background"},
+ {n:"Winter Festival 2025",c:50,d:30,pl:600,sp:0,b:622.08,t:"no sale",x:"MCT, Odysseus, Cerberus, Harbinger, Retribution Yoiul Star skins, SKINR items, Genius accelerator"},
+ {n:"Nexus Reckoning Pack",c:79.99,d:0,pl:2000,sp:500,b:432,t:"new",x:"Kikimora, Ferox, Vargur skins, clothing, Capsuleer Day YC127 Expert System (7 days, battlecruisers), paints, Expert accelerator"}
+];
+var GONE=[
+ {n:"Heart of Darkness Pack",c:"$9.49",d:14,pl:50,sp:100,b:69.12,x:"Standard accelerator, Core Ship Operations Expert System, Basic Glamourex, Tholos skin"},
+ {n:"Plex Starter: Bronze",c:"250 PLEX",d:14,pl:0,sp:50,b:276.48,x:"Specialist accelerator, skins for Rifter, Nereus, Inquisitor, Heron, Venture, 2x Core Ship Operations Expert System"},
+ {n:"Plex Starter: Silver",c:"500 PLEX",d:30,pl:0,sp:250,b:155.52,x:"Advanced accelerator, skins for Rifter, Iteron Mark V, Inquisitor, Heron, Caracal, Vexor, Arbitrator, Scythe, Retriever, Mining Barge Expert System"},
+ {n:"Plex Starter: Gold",c:"1,000 PLEX",d:60,pl:0,sp:500,b:69.12,x:"Standard accelerator, skins for Falcon, Isthar, Scimitar, Devoter, Sabre, Stork, Hulk, Viator, chest skin"},
+ {n:"Plex Starter: Platinum",c:"2,000 PLEX",d:90,pl:0,sp:500,b:276.48,x:"2 MCT, Specialist accelerator, 10 Skill Extractors, skins for Golem, Paladin, Leshak, Vargur, Kronos, Charon, Orca"}
+];
+var BOOST=[
+ {n:"Genius",p:180,a:12,h:24},{n:"Expert",p:125,a:10,h:20},{n:"Specialist",p:80,a:8,h:16},
+ {n:"Advanced",p:45,a:6,h:12},{n:"Standard",p:20,a:4,h:8},{n:"Basic 'Boost'",p:5,a:2,h:4}
+];
+var EXT=[{q:2,p:140},{q:20,p:1190},{q:100,p:5600}];
+var HIST={
+ dates:["2026-11-19","2026-09-12","2026-06-23","2026-06-23","2026-06-17","2026-05-05","2026-02-06","2026-01-19","2025-12-20","2025-11-12","2025-09-20","2025-05-22","2025-04-17","2025-03-14","2025-01-17"],
+ plex:[4.929,4.87,4.65,5.1,4.69,4.776,4.712,4.734,4.698,5.165,5.576,6.375,6.72,6.249,6.148],
+ ext:[477,469.1,473.6,459.7,456,445.5,485,498.1,468.2,425,446.9,425,405.7,538.3,508.3],
+ hyper:[180,293.9,296.5,282.6,258.6,241.8,414,384,385,305.2,335.2,305.2,294.9,310.5,319.3],
+ inj:[722.8,729.5,740,717.7,739,754.9,780.9,773.5,736.8,839.4,760.3,839.4,795.3,872.8,864.1],
+ diff:[245.8,260.4,266.4,258,283,309.4,295.9,275.4,268.6,414.4,313.4,414.4,389.6,334.5,355.8]
+};
+
+/* ---------- optimisers ---------- */
+function omegaNes(){return OMEGA.map(function(o){return {m:o.m,c:$("optSale").checked?o.sale:o.base}})}
+function cashFactor(){return $("optMarkee").checked?0.97:1}
+/* cheapest exact total of N months */
+function bestExact(items,N){
+  var INF=1e18,dp=[0],ch=[0],i,j;
+  for(i=1;i<=N;i++){dp[i]=INF;ch[i]=0;for(j=0;j<items.length;j++){var m=items[j].m;if(m<=i&&dp[i-m]+items[j].c<dp[i]-1e-9){dp[i]=dp[i-m]+items[j].c;ch[i]=j}}}
+  var out={},k=N;while(k>0){var it=items[ch[k]];out[it.m]=(out[it.m]||0)+1;k-=it.m}
+  return {cost:dp[N],combo:out};
+}
+/* most months you can buy with P plex */
+function maxMonths(items,P){
+  var best=0,dp=[0],i,j;
+  for(i=1;i<=120;i++){dp[i]=1e18;for(j=0;j<items.length;j++){var m=items[j].m;if(m<=i&&dp[i-m]+items[j].c<dp[i])dp[i]=dp[i-m]+items[j].c}if(dp[i]<=P)best=i}
+  return best;
+}
+/* cheapest PLEX pack mix holding at least P plex */
+function bestPacks(P){
+  var U=50,need=Math.ceil(P/U),top=need+400,INF=1e18,dp=[0],ch=[0],i,j;
+  var packs=PACKS.filter(function(p){return !p.big});
+  for(i=1;i<=top;i++){dp[i]=INF;ch[i]=-1;for(j=0;j<packs.length;j++){var u=packs[j].p/U;if(u<=i&&dp[i-u]+packs[j].usd<dp[i]-1e-9){dp[i]=dp[i-u]+packs[j].usd;ch[i]=j}}}
+  var bx=need;for(i=need;i<=top;i++)if(dp[i]<dp[bx]-1e-9)bx=i;
+  var out={},k=bx;while(k>0){var pk=packs[ch[k]];out[pk.p]=(out[pk.p]||0)+1;k-=pk.p/U}
+  return {cost:dp[bx],plex:bx*U,combo:out};
+}
+function comboText(c,suffix){
+  return Object.keys(c).map(Number).sort(function(a,b){return b-a}).map(function(k){return c[k]+"x "+(suffix==="mo"?k+" mo":fmt(k)+" PLEX")}).join(" + ")||"none";
+}
+
+/* ---------- calculator ---------- */
+function renderCalc(){
+  var N=Math.max(1,Math.min(120,Math.round(parseFloat($("months").value)||1)));
+  var f=cashFactor();
+  var cash=bestExact(OMEGA.map(function(o){return {m:o.m,c:o.usd*f}}),N);
+  var nes=bestExact(omegaNes(),N);
+  var pk=bestPacks(nes.cost);
+  var pkCash=pk.cost*f;
+  var cashCmp=[cash.cost,pkCash],lo=Math.min.apply(null,cashCmp);
+  var iskCostB=nes.cost*num("pPlex")/1000;
+  var h="";
+  h+='<div class="res'+(cash.cost===lo?' best':'')+'"><h3>Pay cash for Omega'+(cash.cost===lo?'<span class="tagbest">cheapest cash</span>':'')+'</h3><div class="big">'+usd(cash.cost)+'</div><div class="per">'+usd(cash.cost/N)+' per month</div><div class="combo">'+comboText(cash.combo,"mo")+'</div></div>';
+  h+='<div class="res"><h3>Pay with PLEX you already hold</h3><div class="big">'+fmt(nes.cost)+' PLEX</div><div class="per">'+isk(nes.cost)+' ISK at your PLEX price, '+isk(nes.cost/N)+' per month</div><div class="combo">'+comboText(nes.combo,"mo")+'</div></div>';
+  h+='<div class="res'+(pkCash===lo?' best':'')+'"><h3>Buy PLEX packs with cash, then spend it'+(pkCash===lo?'<span class="tagbest">cheapest cash</span>':'')+'</h3><div class="big">'+usd(pkCash)+'</div><div class="per">'+usd(pkCash/N)+' per month, '+fmt(pk.plex-nes.cost)+' PLEX spare</div><div class="combo">'+comboText(pk.combo)+'</div></div>';
+  $("results").innerHTML=h;
+  var d=cash.cost-pkCash;
+  $("calcNote").textContent=(d>0.005?"Buying PLEX packs saves "+usd(d)+" over paying cash for the "+N+" months. ":d<-0.005?"Paying cash saves "+usd(-d)+" over buying PLEX packs for the "+N+" months. ":"Cash and PLEX packs cost the same here. ")+"Buying the PLEX on the market instead costs "+iskCostB.toFixed(2)+" B ISK.";
+}
+
+/* ---------- tables ---------- */
+function row(c){return "<tr>"+c.join("")+"</tr>"}
+function td(v,cls,title){return "<td"+(cls?' class="'+cls+'"':"")+(title?' title="'+title+'"':"")+">"+v+"</td>"}
+function renderOmega(){
+  var f=cashFactor(),sale=$("optSale").checked;
+  var h="<thead><tr><th>Length</th><th class='n'>Cash</th><th class='n'>Per month</th>"+($("optMarkee").checked?"<th class='n'>With code</th>":"")+"<th class='n'>PLEX sale</th><th class='n'>PLEX normal</th><th class='n'>PLEX per month</th><th class='n'>ISK per month</th><th>Extras</th></tr></thead><tbody>";
+  OMEGA.forEach(function(o){
+    var pl=sale?o.sale:o.base;
+    h+=row([td(o.m+" month"+(o.m>1?"s":""),"nm"),td(usd(o.usd),"n"),td(usd(o.usd/o.m),"n"),$("optMarkee").checked?td(usd(o.usd*f)+" ("+usd(o.usd*f/o.m)+"/mo)","n"):"",td(fmt(o.sale),"n"),td(fmt(o.base),"n"),td(fmt(pl/o.m,1),"n"),td(isk(pl/o.m),"n"),td(o.x,"x")]);
+  });
+  $("omegaTbl").innerHTML=h+"</tbody>";
+  var b="<thead><tr><th>Length</th><th class='n'>Cash</th><th class='n'>Per month</th><th class='n'>PLEX included</th><th class='n'>Worth in ISK</th><th>Included PLEX buys (sale prices)</th></tr></thead><tbody>";
+  BUNDLE.forEach(function(x){b+=row([td(x.m+" months"),td(usd(x.usd),"n"),td(usd(x.usd/x.m),"n"),td(fmt(x.plex),"n"),td(isk(x.plex),"n"),td(x.buys,"x")])});
+  $("bundleTbl").innerHTML=b+"</tbody>";
+}
+function renderPlex(){
+  var f=cashFactor(),items=omegaNes();
+  var h="<thead><tr><th>Pack</th><th class='n'>Cash</th><th class='n'>PLEX per $</th><th class='n'>$ per 1,000 PLEX</th><th class='n'>Worth in ISK</th><th class='n'>$ per 1 B ISK</th><th class='n'>Months of Omega</th><th class='n'>$ per month</th></tr></thead><tbody>";
+  PACKS.forEach(function(p){
+    var mo=maxMonths(items,p.p),c=p.usd*($("optMarkee").checked&&!p.big?f:1);
+    var perB=p.p*num("pPlex")/1000;
+    h+=row([td(fmt(p.p)+" PLEX"),td(usd(c),"n"),td(fmt(p.p/p.usd,1),"n"),td(usd(c/p.p*1000),"n"),td(isk(p.p),"n"),td(perB>0?usd(c/perB):"n/a","n"),td(mo>=120?"120+":String(mo),"n"),td(mo&&mo<120?usd(c/mo):"n/a","n")]);
+  });
+  $("plexTbl").innerHTML=h+"</tbody>";
+}
+var curr="usd",sortKey="per";
+function renderSp(){
+  var list=(curr==="usd"?SP_USD:SP_PLEX).map(function(r){var tot=r.sp+r.b;return {n:r.n,c:r.c,sp:r.sp,b:r.b,tot:tot,per:tot/r.c,t:r.t,x:r.x}});
+  list.sort(function(a,b){return sortKey==="per"?b.per-a.per:a.c-b.c});
+  var max=Math.max.apply(null,list.map(function(r){return r.per}));
+  var u=curr==="usd";
+  var h="<thead><tr><th>Bundle</th><th class='n'>"+(u?"Cash":"PLEX")+"</th>"+(u?"":"<th class='n'>ISK</th>")+"<th class='n'>Total SP (k)</th><th class='n'>SP (k) per "+(u?"$":"PLEX")+"</th><th style='min-width:80px'></th><th>Status</th><th>Also includes</th></tr></thead><tbody>";
+  list.forEach(function(r){
+    h+=row([td("<strong>"+r.n+"</strong><small>"+fmt(r.sp)+"k bought + "+fmt(r.b,0)+"k boosters</small>","nm"),td(u?usd(r.c*(r.t==="previous"?1:cashFactor())):fmt(r.c),"n"),u?"":td(isk(r.c),"n"),td(fmt(r.tot,1),"n"),td(fmt(r.per,2),"n"),'<td><span class="bar" style="width:'+Math.max(2,r.per/max*100)+'%" aria-hidden="true"></span></td>',td(pill(r.t)),td(r.x,"x")]);
+  });
+  $("spTbl").innerHTML=h+"</tbody>";
+  $("cUsd").setAttribute("aria-pressed",u);$("cPlex").setAttribute("aria-pressed",!u);
+}
+function renderPacks(){
+  var h="<thead><tr><th>Pack</th><th class='n'>Cash</th><th class='n'>SP (k) per $</th><th class='n'>Omega-only $ per month</th><th>Status</th><th>Contents</th></tr></thead><tbody>";
+  STARTER.forEach(function(r){
+    var per=(r.sp+r.b)/r.c,bits=[];
+    if(r.d)bits.push(r.d+" days Omega");if(r.pl)bits.push(fmt(r.pl)+" PLEX");if(r.sp)bits.push(fmt(r.sp)+"k SP");if(r.b)bits.push(fmt(r.b,0)+"k booster SP");
+    h+=row([td("<strong>"+r.n+"</strong>","nm"),td(usd(r.c),"n"),td(per>0?fmt(per,2):"n/a","n"),td(r.d>0?usd(r.c/r.d*30):"n/a","n"),td(pill(r.t)),td((bits.length?"<strong>"+bits.join(", ")+".</strong> ":"")+r.x,"x")]);
+  });
+  $("packTbl").innerHTML=h+"</tbody>";
+  var g="<thead><tr><th>Pack</th><th class='n'>Price</th><th>Contents</th></tr></thead><tbody>";
+  GONE.forEach(function(r){var bits=[];if(r.d)bits.push(r.d+" days Omega");if(r.pl)bits.push(fmt(r.pl)+" PLEX");if(r.sp)bits.push(fmt(r.sp)+"k SP");if(r.b)bits.push(fmt(r.b,0)+"k booster SP");g+=row([td("<strong>"+r.n+"</strong>","nm"),td(r.c,"n"),td("<strong>"+bits.join(", ")+".</strong> "+r.x,"x")])});
+  $("goneTbl").innerHTML=g+"</tbody>";
+  var b="<thead><tr><th>Accelerator</th><th class='n'>PLEX</th><th class='n'>Attribute bonus</th><th class='n'>Hours</th><th class='n'>Total SP (k)</th><th class='n'>SP (k) per PLEX</th></tr></thead><tbody>";
+  BOOST.forEach(function(r){var s=r.a*r.h*2.16;b+=row([td("<strong>"+r.n+"</strong>"),td(fmt(r.p),"n"),td("+"+r.a,"n"),td(String(r.h),"n"),td(fmt(s,2),"n"),td(fmt(s/r.p,2),"n")])});
+  $("boostTbl").innerHTML=b+"</tbody>";
+}
+function renderMarket(){
+  var pl=num("pPlex"),ex=num("pExt"),inj=num("pInj");
+  var h="<thead><tr><th class='n'>Extractors</th><th class='n'>PLEX cost</th><th class='n'>PLEX in ISK (M)</th><th class='n'>Market value (M)</th><th class='n'>You save (M)</th><th class='n'>Saving</th></tr></thead><tbody>";
+  EXT.forEach(function(e){
+    var viaPlex=e.p*pl,market=e.q*ex,save=market-viaPlex;
+    h+=row([td(String(e.q),"n"),td(fmt(e.p),"n"),td(fmt(viaPlex,0),"n"),td(fmt(market,0),"n"),td(fmt(save,0),"n"),td(market>0?fmt(save/market*100,1)+"%":"n/a","n")]);
+  });
+  h+="</tbody>";
+  $("extTbl").innerHTML=h;
+}
+/* ---------- charts ---------- */
+function line(title,vals,unit){
+  var W=320,H=150,L=38,R=10,T=10,B=24,n=vals.length;
+  var d=HIST.dates.slice().reverse(),v=vals.slice().reverse();
+  var mn=Math.min.apply(null,v),mx=Math.max.apply(null,v),pad=(mx-mn)*0.15||1;mn-=pad;mx+=pad;
+  function X(i){return L+i*(W-L-R)/(n-1)}
+  function Y(x){return T+(mx-x)/(mx-mn)*(H-T-B)}
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+title+', '+d[0]+' to '+d[n-1]+', from '+v[0]+' to '+v[n-1]+' '+unit+'">';
+  for(var g=0;g<4;g++){var gv=mn+(mx-mn)*g/3;s+='<line class="gl" x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(gv)+'" y2="'+Y(gv)+'"/><text class="ax" x="'+(L-4)+'" y="'+(Y(gv)+3)+'" text-anchor="end">'+(mx-mn>20?gv.toFixed(0):gv.toFixed(2))+'</text>'}
+  s+='<polyline class="ln" points="'+v.map(function(x,i){return X(i)+","+Y(x)}).join(" ")+'"/>';
+  v.forEach(function(x,i){s+='<circle class="dt" r="2.6" cx="'+X(i)+'" cy="'+Y(x)+'"><title>'+d[i]+': '+x+' '+unit+'</title></circle>'});
+  s+='<text class="ax" x="'+L+'" y="'+(H-6)+'">'+d[0]+'</text><text class="ax" x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end">'+d[n-1]+'</text></svg>';
+  return '<div class="chart"><h3>'+title+'</h3>'+s+'</div>';
+}
+function renderCharts(){
+  $("charts").innerHTML=line("PLEX price (M ISK)",HIST.plex,"M ISK")+line("Skill Extractor (M ISK)",HIST.ext,"M ISK")+line("Large Skill Injector (M ISK)",HIST.inj,"M ISK")+line("Injector minus extractor (M ISK)",HIST.diff,"M ISK");
+  var h="<thead><tr><th>Date</th><th class='n'>PLEX (M)</th><th class='n'>Extractor (M)</th><th class='n'>Hypercore (k)</th><th class='n'>Large Injector (M)</th><th class='n'>Spread (M)</th></tr></thead><tbody>";
+  HIST.dates.forEach(function(dt,i){h+=row([td(dt),td(String(HIST.plex[i]),"n"),td(String(HIST.ext[i]),"n"),td(String(HIST.hyper[i]),"n"),td(String(HIST.inj[i]),"n"),td(String(HIST.diff[i]),"n")])});
+  $("histTbl").innerHTML=h+"</tbody>";
+}
+
+function all(){renderCalc();renderOmega();renderPlex();renderSp();renderPacks();renderMarket()}
+["pPlex","pExt","pInj","optMarkee","optSale","months"].forEach(function(id){$(id).addEventListener("input",all);$(id).addEventListener("change",all)});
+$("cUsd").addEventListener("click",function(){curr="usd";renderSp()});
+$("cPlex").addEventListener("click",function(){curr="plex";renderSp()});
+renderCharts();all();
+})();
+</script>
+</body>
+</html>
